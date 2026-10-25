@@ -1,0 +1,24 @@
+# Datenbanken und Datenbank-Backups
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+
+# Sicherungskopien
+*.bak
+*.bak*
+*.before-*
+*.tar.gz
+
+# Geheimnisse und lokale Konfiguration
+.env
+.env.*
+!.env.example
+config/
+logs/
+
+# Editor- und Betriebssystemdateien
+.DS_Store
+.idea/
+.vscode/
