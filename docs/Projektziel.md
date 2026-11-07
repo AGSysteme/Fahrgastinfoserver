@@ -32,6 +32,10 @@ Debian 13
 | Datenbank | fahrgastinfoserver |
 | Zeichensatz | utf8mb4 |
 
+
+## Style
+-es wird lokal Bootstrap verwendet
+
 ## Audio
 
 ### Standardformat
