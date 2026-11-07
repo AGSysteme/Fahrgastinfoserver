@@ -1,627 +1,362 @@
+
+<?php
+/**
+ * @var array $controllers
+ * @var string $search
+ * @var string|null $error
+ * @var string $csrfToken
+ */
+?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Controller – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Controller – ELA Server</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-header h1 {
-    margin: 0;
-    font-size: 24px;
-}
-
-main {
-    max-width: 1100px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 14px;
-    padding: 25px;
-
-    box-shadow:
-        0 2px 10px rgba(0, 0, 0, .08);
-}
-
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-    margin-bottom: 25px;
-}
-
-.topbar h2 {
-    margin: 0 0 6px 0;
-    font-size: 24px;
-}
-
-.info {
-    color: #6b7280;
-}
-
-.button {
-    display: inline-block;
-
-    padding: 10px 16px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    border-radius: 8px;
-
-    font-weight: 600;
-
-    border: 0;
-
-    cursor: pointer;
-}
-
-.button:hover {
-    background: #1d4ed8;
-}
-
-.button.secondary {
-    background: #e5e7eb;
-    color: #111827;
-}
-
-.button.secondary:hover {
-    background: #d1d5db;
-}
-
-.searchbar {
-    display: flex;
-    gap: 10px;
-
-    margin-bottom: 25px;
-}
-
-.searchbar input {
-    flex: 1;
-
-    min-width: 0;
-
-    padding: 11px 13px;
-
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-
-    font-size: 15px;
-}
-
-.searchbar input:focus {
-    outline: none;
-    border-color: #2563eb;
-
-    box-shadow:
-        0 0 0 3px rgba(37, 99, 235, .12);
-}
-
-.controllers {
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
-    gap: 18px;
-}
-
-.controller {
-    border: 1px solid #e5e7eb;
-
-    border-radius: 12px;
-
-    padding: 20px;
-
-    background: #f9fafb;
-
-    transition:
-        box-shadow .15s ease,
-        border-color .15s ease;
-}
-
-.controller:hover {
-    border-color: #cbd5e1;
-
-    box-shadow:
-        0 4px 12px rgba(0, 0, 0, .06);
-}
-
-.controller-header {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: flex-start;
-
-    gap: 15px;
-
-    margin-bottom: 18px;
-}
-
-.controller-name {
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.status {
-    display: inline-flex;
-
-    align-items: center;
-
-    gap: 6px;
-
-    padding: 5px 9px;
-
-    border-radius: 999px;
-
-    font-size: 12px;
-
-    font-weight: 700;
-
-    white-space: nowrap;
-}
-
-.status.active {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.status.inactive {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.status-dot {
-    width: 7px;
-    height: 7px;
-
-    border-radius: 50%;
-
-    background: currentColor;
-}
-
-.details {
-    display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap: 12px;
-
-    margin-bottom: 20px;
-}
-
-.detail {
-    background: white;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 8px;
-
-    padding: 10px 12px;
-
-    min-width: 0;
-}
-
-.detail-label {
-    color: #6b7280;
-
-    font-size: 11px;
-
-    text-transform: uppercase;
-
-    letter-spacing: .04em;
-
-    margin-bottom: 4px;
-}
-
-.detail-value {
-    font-size: 14px;
-
-    font-weight: 600;
-
-    overflow-wrap: anywhere;
-}
-
-.controller-actions {
-    display: flex;
-
-    gap: 8px;
-
-    flex-wrap: wrap;
-}
-
-.empty {
-    padding: 40px 25px;
-
-    text-align: center;
-
-    color: #6b7280;
-
-    border: 2px dashed #d1d5db;
-
-    border-radius: 10px;
-}
-
-@media (max-width: 750px) {
-
-    .controllers {
-        grid-template-columns: 1fr;
-    }
-
-}
-
-@media (max-width: 600px) {
-
-    main {
-        margin: 20px auto;
-        padding: 0 12px;
-    }
-
-    .card {
-        padding: 18px;
-    }
-
-    .topbar {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .searchbar {
-        flex-direction: column;
-    }
-
-    .details {
-        grid-template-columns: 1fr;
-    }
-
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1240px;">
 
-<div class="card">
+    <div class="card shadow-sm">
 
-<div class="topbar">
+        <div class="card-body p-3 p-md-4">
 
-<div>
+            <!-- Überschrift -->
 
-<h2>Controller</h2>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
-<div class="info">
-Verwaltung der angeschlossenen ELA-Controller
-</div>
+                <div>
+                    <h2 class="h4 mb-1">Controller</h2>
 
-</div>
+                    <div class="text-muted small">
+                        Verwaltung der angeschlossenen ELA-Controller
+                    </div>
+                </div>
 
-<a
-    class="button"
-    href="/?page=controllers&action=new"
->
-+ Neuer Controller
-</a>
+                <a
+                    class="btn btn-primary"
+                    href="/?page=controllers&action=new"
+                >
+                    + Neuer Controller
+                </a>
 
-</div>
+            </div>
 
+            <!-- Suche -->
 
-<form
-    method="get"
-    class="searchbar"
->
+            <form method="get" class="row g-2 mb-4">
 
-<input
-    type="hidden"
-    name="page"
-    value="controllers"
->
+                <input
+                    type="hidden"
+                    name="page"
+                    value="controllers"
+                >
 
-<input
-    type="text"
-    name="search"
-    value="<?= htmlspecialchars($search) ?>"
-    placeholder="Controller suchen..."
->
+                <div class="col">
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        value="<?= htmlspecialchars($search) ?>"
+                        placeholder="Controller suchen..."
+                        aria-label="Controller suchen"
+                    >
+                </div>
 
-<button
-    type="submit"
-    class="button"
->
-Suchen
-</button>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        Suchen
+                    </button>
+                </div>
 
-<?php if ($search !== ''): ?>
+                <?php if ($search !== ''): ?>
 
-<a
-    href="/?page=controllers"
-    class="button secondary"
->
-Zurücksetzen
-</a>
+                    <div class="col-auto">
+                        <a
+                            href="/?page=controllers"
+                            class="btn btn-secondary"
+                        >
+                            Zurücksetzen
+                        </a>
+                    </div>
 
-<?php endif; ?>
+                <?php endif; ?>
 
-</form>
+            </form>
 
-<?php if ($error !== null): ?>
+            <!-- Fehlermeldung -->
 
-<div
-    style="
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
-        padding: 13px 15px;
-        margin-bottom: 22px;
-        border-radius: 9px;
-    "
->
-    <?= htmlspecialchars($error) ?>
-</div>
+            <?php if ($error !== null): ?>
 
-<?php endif; ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error) ?>
+                </div>
 
-<?php if (!$controllers): ?>
+            <?php endif; ?>
 
-<div class="empty">
+            <!-- Keine Controller -->
 
-<?php if ($search !== ''): ?>
+            <?php if (!$controllers): ?>
 
-Keine Controller für
-<strong>
-„<?= htmlspecialchars($search) ?>“
-</strong>
-gefunden.
+                <div class="text-center py-5">
 
-<?php else: ?>
+                    <div class="mb-3 text-muted">
+                        <span class="fs-1">⌁</span>
+                    </div>
 
-Noch kein Controller angelegt.
+                    <?php if ($search !== ''): ?>
 
-<?php endif; ?>
+                        <h3 class="h5 mb-2">
+                            Keine Controller gefunden
+                        </h3>
 
-</div>
+                        <p class="text-muted mb-0">
+                            Für
+                            <strong>
+                                „<?= htmlspecialchars($search) ?>“
+                            </strong>
+                            wurden keine passenden Controller gefunden.
+                        </p>
 
-<?php else: ?>
+                    <?php else: ?>
 
-<div class="controllers">
+                        <h3 class="h5 mb-2">
+                            Noch keine Controller vorhanden
+                        </h3>
 
-<?php foreach ($controllers as $controller): ?>
+                        <p class="text-muted mb-0">
+                            Lege deinen ersten ELA-Controller an.
+                        </p>
 
-<div class="controller">
+                    <?php endif; ?>
 
-<div class="controller-header">
+                </div>
 
-<div class="controller-name">
+            <?php else: ?>
 
-<?= htmlspecialchars(
-    (string) $controller['name']
-) ?>
+                <!-- Controller-Karten -->
 
-</div>
+                <div class="row g-3">
 
-<?php if ((int) $controller['enabled'] === 1): ?>
+                    <?php foreach ($controllers as $controller): ?>
 
-<div class="status active">
-<span class="status-dot"></span>
-Aktiv
-</div>
+                        <div class="col-12 col-lg-6">
 
-<?php else: ?>
+                            <div class="card h-100 controller-card">
 
-<div class="status inactive">
-<span class="status-dot"></span>
-Inaktiv
-</div>
+                                <div class="card-body p-3 p-md-4">
 
-<?php endif; ?>
+                                    <!-- Controller-Name und Status -->
 
-</div>
+                                    <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
 
+                                        <h3 class="h5 mb-0 text-break">
+                                            <?= htmlspecialchars(
+                                                (string) $controller['name']
+                                            ) ?>
+                                        </h3>
 
-<div class="details">
+                                        <?php if ((int) $controller['enabled'] === 1): ?>
 
-<div class="detail">
+                                            <span class="badge text-bg-success flex-shrink-0">
+                                                Aktiv
+                                            </span>
 
-<div class="detail-label">
-Geräte-ID
-</div>
+                                        <?php else: ?>
 
-<div class="detail-value">
-<?= htmlspecialchars(
-    (string) $controller['device_id']
-) ?>
-</div>
+                                            <span class="badge text-bg-danger flex-shrink-0">
+                                                Inaktiv
+                                            </span>
 
-</div>
+                                        <?php endif; ?>
 
+                                    </div>
 
-<div class="detail">
+                                    <!-- Technische Details -->
 
-<div class="detail-label">
-IP-Adresse
-</div>
+                                    <div class="row g-2 mb-4">
 
-<div class="detail-value">
+                                        <div class="col-12 col-sm-6">
 
-<?= htmlspecialchars(
-    (string) (
-        $controller['ip_address'] ?? '–'
-    )
-) ?>
+                                            <div class="controller-detail h-100">
 
-</div>
+                                                <div class="text-muted small mb-1">
+                                                    Geräte-ID
+                                                </div>
 
-</div>
+                                                <div class="fw-semibold font-monospace text-break">
+                                                    <?= htmlspecialchars(
+                                                        (string) $controller['device_id']
+                                                    ) ?>
+                                                </div>
 
+                                            </div>
 
-<div class="detail">
+                                        </div>
 
-<div class="detail-label">
-MQTT Client-ID
-</div>
+                                        <div class="col-12 col-sm-6">
 
-<div class="detail-value">
+                                            <div class="controller-detail h-100">
 
-<?= htmlspecialchars(
-    (string) $controller['mqtt_client_id']
-) ?>
+                                                <div class="text-muted small mb-1">
+                                                    IP-Adresse
+                                                </div>
 
-</div>
+                                                <div class="fw-semibold font-monospace text-break">
+                                                    <?= htmlspecialchars(
+                                                        (string) (
+                                                            $controller['ip_address'] ?? '–'
+                                                        )
+                                                    ) ?>
+                                                </div>
 
-</div>
+                                            </div>
 
+                                        </div>
 
-<div class="detail">
+                                        <div class="col-12 col-sm-6">
 
-<div class="detail-label">
-MQTT Topic
-</div>
+                                            <div class="controller-detail h-100">
 
-<div class="detail-value">
+                                                <div class="text-muted small mb-1">
+                                                    MQTT Client-ID
+                                                </div>
 
-<?= htmlspecialchars(
-    (string) $controller['mqtt_topic']
-) ?>
+                                                <div class="fw-semibold text-break">
+                                                    <?= htmlspecialchars(
+                                                        (string) $controller['mqtt_client_id']
+                                                    ) ?>
+                                                </div>
 
-</div>
+                                            </div>
 
-</div>
+                                        </div>
 
-</div>
+                                        <div class="col-12 col-sm-6">
 
-<div class="controller-actions">
+                                            <div class="controller-detail h-100">
 
-<a
-    class="button"
-    href="/?page=controllers&action=stations&id=<?= (int) $controller['id'] ?>"
->
-Haltestellen
-</a>
+                                                <div class="text-muted small mb-1">
+                                                    MQTT Topic
+                                                </div>
 
-<a
-    class="button secondary"
-    href="/?page=controllers&action=edit&id=<?= (int) $controller['id'] ?>"
->
-Bearbeiten
-</a>
+                                                <div class="fw-semibold text-break">
+                                                    <?= htmlspecialchars(
+                                                        (string) $controller['mqtt_topic']
+                                                    ) ?>
+                                                </div>
 
-<form
-    method="post"
-    style="display: inline;"
-    onsubmit="return confirm(
-        'Controller „<?= htmlspecialchars(
-            (string) $controller['name'],
-            ENT_QUOTES
-        ) ?>“ wirklich löschen?'
-    );"
->
+                                            </div>
 
-<input
-    type="hidden"
-    name="page"
-    value="controllers"
->
+                                        </div>
 
-<input
-    type="hidden"
-    name="action"
-    value="delete"
->
+                                    </div>
 
-<input
-    type="hidden"
-    name="id"
-    value="<?= (int) $controller['id'] ?>"
->
+                                    <!-- Aktionen -->
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+                                    <div class="d-flex flex-wrap gap-2">
 
-<button
-    type="submit"
-    class="button"
-    style="
-        background: #dc2626;
-    "
->
-Löschen
-</button>
+                                        <a
+                                            class="btn btn-sm btn-primary"
+                                            href="/?page=controllers&action=stations&id=<?= (int) $controller['id'] ?>"
+                                        >
+                                            Haltestellen
+                                        </a>
 
-</form>
+                                        <a
+                                            class="btn btn-sm btn-secondary"
+                                            href="/?page=controllers&action=edit&id=<?= (int) $controller['id'] ?>"
+                                        >
+                                            Bearbeiten
+                                        </a>
 
-</div>
+                                        <form
+                                            method="post"
+                                            onsubmit="return confirm(<?= htmlspecialchars(
+                                                json_encode(
+                                                    'Controller „' . (string) $controller['name'] . '“ wirklich löschen?',
+                                                    JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP
+                                                ),
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>);"
+                                        >
 
-</div>
+                                            <input
+                                                type="hidden"
+                                                name="page"
+                                                value="controllers"
+                                            >
 
-<?php endforeach; ?>
+                                            <input
+                                                type="hidden"
+                                                name="action"
+                                                value="delete"
+                                            >
 
-</div>
+                                            <input
+                                                type="hidden"
+                                                name="id"
+                                                value="<?= (int) $controller['id'] ?>"
+                                            >
 
-<?php endif; ?>
+                                            <input
+                                                type="hidden"
+                                                name="csrf_token"
+                                                value="<?= htmlspecialchars($csrfToken) ?>"
+                                            >
 
-</div>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-sm btn-danger"
+                                            >
+                                                Löschen
+                                            </button>
 
-<p style="margin-top: 25px;">
+                                        </form>
 
-<a href="/">
-← Zurück zum Dashboard
-</a>
+                                    </div>
 
-</p>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    <?php endforeach; ?>
+
+                </div>
+
+            <?php endif; ?>
+
+            <!-- Zurück zum Dashboard -->
+
+            <div class="mt-4">
+
+                <a href="/" class="text-decoration-none">
+                    &larr; Zurück zum Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </main>
 
-</body>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>

@@ -1,323 +1,208 @@
-<!DOCTYPE html>
+<?php
+/**
+ * @var array $lines
+ * @var string $csrfToken
+ * @var string|null $error
+ */
+?>
 
-<html lang="de">
+<!DOCTYPE html>
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Linien - ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Linien - ELA Server</title>
-
-<style>
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-main {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-
-    box-shadow:
-        0 2px 8px rgba(0,0,0,.08);
-}
-
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-a.button,
-button {
-    display: inline-block;
-
-    border: 0;
-    border-radius: 8px;
-
-    padding: 10px 16px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-a.button:hover,
-button:hover {
-    background: #1d4ed8;
-}
-
-.button-secondary {
-    background: #6b7280 !important;
-}
-
-.button-danger {
-    background: #dc2626 !important;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    text-align: left;
-    padding: 12px;
-
-    border-bottom:
-        1px solid #e5e7eb;
-}
-
-.actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.error {
-    background: #fee2e2;
-    color: #991b1b;
-
-    padding: 12px;
-
-    margin-bottom: 20px;
-
-    border-radius: 8px;
-}
-
-.active {
-    color: #15803d;
-    font-weight: 600;
-}
-
-.inactive {
-    color: #b91c1c;
-    font-weight: 600;
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server – Linien</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server – Linien</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1240px;">
 
-<div class="card">
+    <div class="card shadow-sm">
 
-<div class="topbar">
+        <div class="card-body p-3 p-md-4">
 
-<h2>Linien</h2>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
-<a
-    class="button"
-    href="/?page=lines&action=new"
->
-    + Neue Linie
-</a>
+                <h2 class="h4 mb-0">Linien</h2>
 
-</div>
+                <a
+                    class="btn btn-primary"
+                    href="/?page=lines&action=new"
+                >
+                    <span class="me-1">+</span> Neue Linie
+                </a>
 
-<?php if ($error !== null): ?>
+            </div>
 
-<div class="error">
-    <?= htmlspecialchars($error) ?>
-</div>
+            <?php if ($error !== null): ?>
 
-<?php endif; ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error) ?>
+                </div>
 
-<?php if (!$lines): ?>
+            <?php endif; ?>
 
-<p>
-    Es sind noch keine Linien vorhanden.
-</p>
+            <?php if (!$lines): ?>
 
-<?php else: ?>
+                <div class="alert alert-secondary mb-0">
+                    Es sind noch keine Linien vorhanden.
+                </div>
 
-<table>
+            <?php else: ?>
 
-<thead>
+                <div class="table-responsive">
 
-<tr>
+                    <table class="table table-hover align-middle mb-0">
 
-<th>Nummer</th>
-<th>Name</th>
-<th>Beschreibung</th>
-<th>Status</th>
-<th>Aktionen</th>
+                        <thead>
+                            <tr>
+                                <th>Nummer</th>
+                                <th>Name</th>
+                                <th>Beschreibung</th>
+                                <th>Status</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
 
-</tr>
+                        <tbody>
 
-</thead>
+                        <?php foreach ($lines as $line): ?>
 
-<tbody>
+                            <tr>
 
-<?php foreach ($lines as $line): ?>
+                                <td>
+                                    <strong>
+                                        <?= htmlspecialchars(
+                                            (string) $line['number']
+                                        ) ?>
+                                    </strong>
+                                </td>
 
-<tr>
+                                <td>
+                                    <?= htmlspecialchars(
+                                        (string) ($line['name'] ?? '')
+                                    ) ?>
+                                </td>
 
-<td>
-    <strong>
-        <?= htmlspecialchars(
-            (string) $line['number']
-        ) ?>
-    </strong>
-</td>
+                                <td>
+                                    <?= htmlspecialchars(
+                                        (string) ($line['description'] ?? '')
+                                    ) ?>
+                                </td>
 
-<td>
-    <?= htmlspecialchars(
-        (string) ($line['name'] ?? '')
-    ) ?>
-</td>
+                                <td>
 
-<td>
-    <?= htmlspecialchars(
-        (string) ($line['description'] ?? '')
-    ) ?>
-</td>
+                                    <?php if ((int) $line['active'] === 1): ?>
 
-<td>
+                                        <span class="badge text-bg-success">
+                                            Aktiv
+                                        </span>
 
-<?php if ((int) $line['active'] === 1): ?>
+                                    <?php else: ?>
 
-<span class="active">
-    Aktiv
-</span>
+                                        <span class="badge text-bg-danger">
+                                            Inaktiv
+                                        </span>
 
-<?php else: ?>
+                                    <?php endif; ?>
 
-<span class="inactive">
-    Inaktiv
-</span>
+                                </td>
 
-<?php endif; ?>
+                                <td>
 
-</td>
+                                    <div class="d-flex flex-wrap gap-2">
 
-<td>
+                                        <a
+                                            class="btn btn-sm btn-primary"
+                                            href="/?page=lines&action=edit&id=<?= (int) $line['id'] ?>"
+                                        >
+                                            Bearbeiten
+                                        </a>
 
-<div class="actions">
+                                        <a
+                                            class="btn btn-sm btn-secondary"
+                                            href="/?page=lines&action=stations&id=<?= (int) $line['id'] ?>"
+                                        >
+                                            Haltestellen
+                                        </a>
 
-<a
-    class="button"
-    href="/?page=lines&action=edit&id=<?= (int) $line['id'] ?>"
->
-    Bearbeiten
-</a>
+                                        <form
+                                            method="post"
+                                            onsubmit="return confirm('Diese Linie wirklich löschen?');"
+                                        >
 
-<a
-    class="button button-secondary"
-    href="/?page=lines&action=stations&id=<?= (int) $line['id'] ?>"
->
-    Haltestellen
-</a>
+                                            <input
+                                                type="hidden"
+                                                name="page"
+                                                value="lines"
+                                            >
 
-<form
-    method="post"
-    onsubmit="return confirm('Diese Linie wirklich löschen?');"
->
+                                            <input
+                                                type="hidden"
+                                                name="action"
+                                                value="delete"
+                                            >
 
-<input
-    type="hidden"
-    name="page"
-    value="lines"
->
+                                            <input
+                                                type="hidden"
+                                                name="id"
+                                                value="<?= (int) $line['id'] ?>"
+                                            >
 
-<input
-    type="hidden"
-    name="action"
-    value="delete"
->
+                                            <input
+                                                type="hidden"
+                                                name="csrf_token"
+                                                value="<?= htmlspecialchars($csrfToken) ?>"
+                                            >
 
-<input
-    type="hidden"
-    name="id"
-    value="<?= (int) $line['id'] ?>"
->
+                                            <button
+                                                type="submit"
+                                                class="btn btn-sm btn-danger"
+                                            >
+                                                Löschen
+                                            </button>
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+                                        </form>
 
-<button
-    type="submit"
-    class="button-danger"
->
-    Löschen
-</button>
+                                    </div>
 
-</form>
+                                </td>
 
-</div>
+                            </tr>
 
-</td>
+                        <?php endforeach; ?>
 
-</tr>
+                        </tbody>
 
-<?php endforeach; ?>
+                    </table>
 
-</tbody>
+                </div>
 
-</table>
+            <?php endif; ?>
 
-<?php endif; ?>
+            <div class="mt-4">
+                <a href="/" class="text-decoration-none">
+                    &larr; Zum Dashboard
+                </a>
+            </div>
 
-<p style="margin-top: 25px;">
+        </div>
 
-<a href="/">
-    ← Zum Dashboard
-</a>
-
-</p>
-
-</div>
+    </div>
 
 </main>
 
-</body>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>

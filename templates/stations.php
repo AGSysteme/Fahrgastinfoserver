@@ -1,578 +1,254 @@
+
+<?php
+/**
+ * @var array $stations
+ * @var string $search
+ */
+?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Haltestellen – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Haltestellen – ELA Server</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-header h1 {
-    margin: 0;
-}
-
-main {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, .08);
-}
-
-.topbar {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-
-    margin-bottom: 25px;
-}
-
-.topbar h2 {
-    margin: 0;
-}
-
-.button {
-    display: inline-block;
-
-    padding: 10px 16px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    border-radius: 8px;
-
-    font-weight: 600;
-}
-
-.button:hover {
-    background: #1d4ed8;
-}
-
-.search {
-    display: flex;
-
-    gap: 10px;
-
-    margin-bottom: 25px;
-}
-
-.search input {
-    flex: 1;
-
-    min-width: 0;
-
-    padding: 11px 13px;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 8px;
-
-    font-size: 15px;
-}
-
-.search input:focus {
-    outline: none;
-
-    border-color: #2563eb;
-
-    box-shadow:
-        0 0 0 3px rgba(37, 99, 235, .12);
-}
-
-.search button {
-    padding: 10px 18px;
-
-    border: 0;
-
-    border-radius: 8px;
-
-    background: #374151;
-
-    color: white;
-
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.search button:hover {
-    background: #1f2937;
-}
-
-.table-wrap {
-    overflow-x: auto;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 10px;
-}
-
-table {
-    width: 100%;
-
-    border-collapse: collapse;
-
-    background: white;
-}
-
-thead {
-    background: #f9fafb;
-}
-
-th {
-    text-align: left;
-
-    padding: 14px 16px;
-
-    color: #374151;
-
-    font-size: 13px;
-
-    text-transform: uppercase;
-
-    letter-spacing: .03em;
-
-    border-bottom: 1px solid #e5e7eb;
-}
-
-td {
-    padding: 15px 16px;
-
-    border-bottom: 1px solid #f0f0f0;
-
-    vertical-align: middle;
-}
-
-tbody tr:last-child td {
-    border-bottom: 0;
-}
-
-tbody tr:hover {
-    background: #f9fafb;
-}
-
-.code {
-    font-family:
-        ui-monospace,
-        SFMono-Regular,
-        Menlo,
-        Monaco,
-        Consolas,
-        monospace;
-
-    font-size: 13px;
-
-    color: #4b5563;
-}
-
-.station-name {
-    font-weight: 700;
-}
-
-.station-short {
-    color: #6b7280;
-
-    font-size: 13px;
-
-    margin-top: 2px;
-}
-
-.coordinates {
-    color: #6b7280;
-
-    font-size: 13px;
-
-    white-space: nowrap;
-}
-
-.badge {
-    display: inline-block;
-
-    padding: 5px 9px;
-
-    border-radius: 999px;
-
-    font-size: 12px;
-
-    font-weight: 700;
-}
-
-.badge-active {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.badge-inactive {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.actions {
-    white-space: nowrap;
-}
-
-.action {
-    display: inline-block;
-
-    padding: 7px 10px;
-
-    border-radius: 7px;
-
-    text-decoration: none;
-
-    font-size: 13px;
-
-    font-weight: 600;
-}
-
-.action-edit {
-    background: #eff6ff;
-    color: #1d4ed8;
-}
-
-.action-edit:hover {
-    background: #dbeafe;
-}
-
-.action-delete {
-    background: #fef2f2;
-    color: #b91c1c;
-
-    margin-left: 5px;
-}
-
-.action-delete:hover {
-    background: #fee2e2;
-}
-
-.empty {
-    padding: 40px;
-
-    text-align: center;
-
-    color: #6b7280;
-}
-
-@media (max-width: 800px) {
-
-    .topbar {
-        align-items: flex-start;
-
-        flex-direction: column;
-    }
-
-    .search {
-        flex-direction: column;
-    }
-
-    .search button {
-        width: 100%;
-    }
-
-    th:nth-child(5),
-    td:nth-child(5) {
-        display: none;
-    }
-
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1240px;">
 
-<div class="card">
+    <div class="card shadow-sm">
 
-<div class="topbar">
+        <div class="card-body p-3 p-md-4">
 
-<h2>
-Haltestellen
-</h2>
+            <!-- Überschrift und neue Haltestelle -->
 
-<a
-    class="button"
-    href="/?page=stations&action=new"
->
-+ Neue Haltestelle
-</a>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
-</div>
+                <h2 class="h4 mb-0">Haltestellen</h2>
 
+                <a
+                    class="btn btn-primary"
+                    href="/?page=stations&action=new"
+                >
+                    + Neue Haltestelle
+                </a>
 
-<form
-    method="get"
-    class="search"
->
+            </div>
 
-<input
-    type="hidden"
-    name="page"
-    value="stations"
->
+            <!-- Suchfunktion -->
 
-<input
-    type="text"
-    name="search"
-    value="<?= htmlspecialchars(
-        (string) $search
-    ) ?>"
-    placeholder="Haltestelle suchen..."
->
+            <form method="get" class="row g-2 mb-4">
 
-<button type="submit">
-Suchen
-</button>
+                <input
+                    type="hidden"
+                    name="page"
+                    value="stations"
+                >
 
-</form>
+                <div class="col">
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        value="<?= htmlspecialchars((string) $search) ?>"
+                        placeholder="Haltestelle suchen..."
+                        aria-label="Haltestelle suchen"
+                    >
+                </div>
 
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-secondary">
+                        Suchen
+                    </button>
+                </div>
 
-<?php if (!$stations): ?>
+            </form>
 
-<div class="empty">
+            <!-- Keine Ergebnisse -->
 
-<h3>
-Keine Haltestellen gefunden
-</h3>
+            <?php if (!$stations): ?>
 
-<p>
-Es wurden keine passenden Haltestellen gefunden.
-</p>
+                <div class="text-center py-5">
 
-</div>
+                    <h3 class="h5 mb-2">
+                        Keine Haltestellen gefunden
+                    </h3>
 
-<?php else: ?>
+                    <p class="text-muted mb-0">
+                        Es wurden keine passenden Haltestellen gefunden.
+                    </p>
 
-<div class="table-wrap">
+                </div>
 
-<table>
+            <?php else: ?>
 
-<thead>
+                <!-- Haltestellentabelle -->
 
-<tr>
+                <div class="table-responsive">
 
-<th>
-Code
-</th>
+                    <table class="table table-hover align-middle mb-0">
 
-<th>
-Haltestelle
-</th>
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Haltestelle</th>
+                                <th>Koordinaten</th>
+                                <th>Status</th>
+                                <th class="text-end">Aktionen</th>
+                            </tr>
+                        </thead>
 
-<th>
-Koordinaten
-</th>
+                        <tbody>
 
-<th>
-Status
-</th>
+                        <?php foreach ($stations as $station): ?>
 
-<th>
-Aktionen
-</th>
+                            <tr>
 
-</tr>
+                                <!-- Haltestellencode -->
 
-</thead>
+                                <td>
+                                    <span class="font-monospace text-muted small">
+                                        <?= htmlspecialchars(
+                                            (string) ($station['station_code'] ?? '–')
+                                        ) ?>
+                                    </span>
+                                </td>
 
-<tbody>
+                                <!-- Name und Kurzname -->
 
-<?php foreach ($stations as $station): ?>
+                                <td>
 
-<tr>
+                                    <div class="fw-semibold">
+                                        <?= htmlspecialchars(
+                                            (string) $station['name']
+                                        ) ?>
+                                    </div>
 
-<td>
+                                    <?php if ($station['short_name'] !== null): ?>
 
-<?php if ($station['station_code'] !== null): ?>
+                                        <div class="text-muted small mt-1">
+                                            <?= htmlspecialchars(
+                                                (string) $station['short_name']
+                                            ) ?>
+                                        </div>
 
-<span class="code">
-<?= htmlspecialchars(
-    (string) $station['station_code']
-) ?>
-</span>
+                                    <?php endif; ?>
 
-<?php else: ?>
+                                </td>
 
-<span class="code">
-–
-</span>
+                                <!-- Koordinaten -->
 
-<?php endif; ?>
+                                <td>
 
-</td>
+                                    <?php if (
+                                        $station['latitude'] !== null &&
+                                        $station['longitude'] !== null
+                                    ): ?>
 
+                                        <div class="font-monospace small">
+                                            <?= htmlspecialchars(
+                                                (string) $station['latitude']
+                                            ) ?>
+                                        </div>
 
-<td>
+                                        <div class="font-monospace small text-muted">
+                                            <?= htmlspecialchars(
+                                                (string) $station['longitude']
+                                            ) ?>
+                                        </div>
 
-<div class="station-name">
+                                    <?php else: ?>
 
-<?= htmlspecialchars(
-    (string) $station['name']
-) ?>
+                                        <span class="text-muted">–</span>
 
-</div>
+                                    <?php endif; ?>
 
-<?php if ($station['short_name'] !== null): ?>
+                                </td>
 
-<div class="station-short">
+                                <!-- Status -->
 
-<?= htmlspecialchars(
-    (string) $station['short_name']
-) ?>
+                                <td>
 
-</div>
+                                    <?php if ((int) $station['active'] === 1): ?>
 
-<?php endif; ?>
+                                        <span class="badge text-bg-success">
+                                            Aktiv
+                                        </span>
 
-</td>
+                                    <?php else: ?>
 
+                                        <span class="badge text-bg-danger">
+                                            Inaktiv
+                                        </span>
 
-<td>
+                                    <?php endif; ?>
 
-<div class="coordinates">
+                                </td>
 
-<?php if (
-    $station['latitude'] !== null &&
-    $station['longitude'] !== null
-): ?>
+                                <!-- Aktionen -->
 
-<?= htmlspecialchars(
-    (string) $station['latitude']
-) ?>
+                                <td class="text-end">
 
-<br>
+                                    <div class="d-flex justify-content-end gap-2 flex-wrap">
 
-<?= htmlspecialchars(
-    (string) $station['longitude']
-) ?>
+                                        <a
+                                            class="btn btn-sm btn-primary"
+                                            href="/?page=stations&action=edit&id=<?= (int) $station['id'] ?>"
+                                        >
+                                            Bearbeiten
+                                        </a>
 
-<?php else: ?>
+                                        <a
+                                            class="btn btn-sm btn-danger"
+                                            href="/?page=stations&action=delete&id=<?= (int) $station['id'] ?>"
+                                            onclick="return confirm('Haltestelle wirklich löschen?');"
+                                        >
+                                            Löschen
+                                        </a>
 
-–
+                                    </div>
 
-<?php endif; ?>
+                                </td>
 
-</div>
+                            </tr>
 
-</td>
+                        <?php endforeach; ?>
 
+                        </tbody>
 
-<td>
+                    </table>
 
-<?php if (
-    (int) $station['active'] === 1
-): ?>
+                </div>
 
-<span class="badge badge-active">
-Aktiv
-</span>
+            <?php endif; ?>
 
-<?php else: ?>
+            <!-- Zurück -->
 
-<span class="badge badge-inactive">
-Inaktiv
-</span>
+            <div class="mt-4">
 
-<?php endif; ?>
+                <a href="/" class="text-decoration-none">
+                    &larr; Zurück zum Dashboard
+                </a>
 
-</td>
+            </div>
 
+        </div>
 
-<td class="actions">
-
-<a
-    class="action action-edit"
-    href="/?page=stations&action=edit&id=<?= (int) $station['id'] ?>"
->
-Bearbeiten
-</a>
-
-<a
-    class="action action-delete"
-    href="/?page=stations&action=delete&id=<?= (int) $station['id'] ?>"
-    onclick="return confirm('Haltestelle wirklich löschen?');"
->
-Löschen
-</a>
-
-</td>
-
-</tr>
-
-<?php endforeach; ?>
-
-</tbody>
-
-</table>
-
-</div>
-
-<?php endif; ?>
-
-
-<p style="margin-top: 25px;">
-
-<a href="/">
-← Zurück zum Dashboard
-</a>
-
-</p>
-
-</div>
+    </div>
 
 </main>
 
-</body>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>
