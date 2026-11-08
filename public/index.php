@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../src/bootstrap.php';
 
 use Ela\Audio;
+use Ela\ComServers;
 use Ela\Controllers;
 use Ela\Csrf;
 use Ela\Database;
@@ -13,6 +14,7 @@ use Ela\Measures;
 use Ela\Router;
 use Ela\Stations;
 use Ela\Web\AudioPage;
+use Ela\Web\ComServersPage;
 use Ela\Web\ControllersPage;
 use Ela\Web\DashboardPage;
 use Ela\Web\LinesPage;
@@ -29,7 +31,8 @@ $services = new Services(
     new Lines($db),
     new Controllers($db),
     new Audio($db),
-    new Measures($db)
+    new Measures($db),
+    new ComServers($db)
 );
 
 $router = new Router();
@@ -49,6 +52,7 @@ $pages = [
     'stations' => new StationsPage($services),
     'lines' => new LinesPage($services),
     'controllers' => new ControllersPage($services),
+    'com-servers' => new ComServersPage($services),
     'audio' => new AudioPage($services),
     'measures' => new MeasuresPage($services),
     'measure-wizard' => new MeasureWizardPage($services),

@@ -165,22 +165,24 @@
 
                     <?php if ($station): ?>
                         <div class="col-12">
-                            <div class="form-check form-switch p-3 border rounded">
-                                <input
-                                    id="active"
-                                    type="checkbox"
-                                    name="active"
-                                    value="1"
-                                    class="form-check-input"
-                                    role="switch"
-                                    <?= (int) $station['active'] === 1
-                                        ? 'checked'
-                                        : '' ?>
-                                >
+                            <div class="border rounded p-3">
+                                <div class="form-check form-switch mb-0">
+                                    <input
+                                        id="active"
+                                        type="checkbox"
+                                        name="active"
+                                        value="1"
+                                        class="form-check-input"
+                                        role="switch"
+                                        <?= (int) $station['active'] === 1
+                                            ? 'checked'
+                                            : '' ?>
+                                    >
 
-                                <label for="active" class="form-check-label">
-                                    Haltestelle ist aktiv
-                                </label>
+                                    <label for="active" class="form-check-label">
+                                        Haltestelle ist aktiv
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     <?php endif; ?>

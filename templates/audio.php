@@ -236,7 +236,7 @@
                                             </audio>
 
                                             <a
-                                                href="/?page=measure-wizard&step=1&audio_id=<?= (int) $audio['id'] ?>"
+                                                href="/?page=measure-wizard&step=1&new=1&audio_id=<?= (int) $audio['id'] ?>"
                                                 class="btn btn-sm btn-primary"
                                             >
                                                 Maßnahme erstellen

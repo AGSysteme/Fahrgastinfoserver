@@ -138,22 +138,6 @@
                                                     ) ?>
                                                 </div>
 
-                                                <div class="station-meta">
-
-                                                    <?php if ($station['short_name'] !== null): ?>
-                                                        <?= htmlspecialchars(
-                                                            (string) $station['short_name']
-                                                        ) ?>
-                                                    <?php endif; ?>
-
-                                                    <?php if ($station['station_code'] !== null): ?>
-                                                        &nbsp; · &nbsp;
-                                                        <?= htmlspecialchars(
-                                                            (string) $station['station_code']
-                                                        ) ?>
-                                                    <?php endif; ?>
-
-                                                </div>
 
                                             </div>
 
@@ -233,22 +217,6 @@
                                                     ) ?>
                                                 </div>
 
-                                                <div class="station-meta">
-
-                                                    <?php if ($station['short_name'] !== null): ?>
-                                                        <?= htmlspecialchars(
-                                                            (string) $station['short_name']
-                                                        ) ?>
-                                                    <?php endif; ?>
-
-                                                    <?php if ($station['station_code'] !== null): ?>
-                                                        &nbsp; · &nbsp;
-                                                        <?= htmlspecialchars(
-                                                            (string) $station['station_code']
-                                                        ) ?>
-                                                    <?php endif; ?>
-
-                                                </div>
 
                                             </div>
 

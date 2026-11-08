@@ -219,3 +219,14 @@ a:hover {
     border: 2px dashed var(--bs-border-color);
     border-radius: 9px;
 }
+
+/* Suchfelder mit orangem Rahmen */
+
+.search-orange {
+    border-color: #fd7e14;
+}
+
+.search-orange:focus {
+    border-color: #fd7e14;
+    box-shadow: 0 0 0 0.2rem rgba(253, 126, 20, .25);
+}

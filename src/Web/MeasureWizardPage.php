@@ -44,9 +44,10 @@ final class MeasureWizardPage extends Page
         if ($step === 1) {
             $audioFiles = $this->services->audio->all();
 
-            $selectedAudioId = !empty($wizard['audio_id'])
-                ? (int) $wizard['audio_id']
-                : (isset($_GET['audio_id']) ? (int) $_GET['audio_id'] : 0);
+            // Eine Ansage aus der Ansage-Seite hat Vorrang vor dem Zwischenstand.
+            $selectedAudioId = isset($_GET['audio_id']) && (int) $_GET['audio_id'] > 0
+                ? (int) $_GET['audio_id']
+                : (int) ($wizard['audio_id'] ?? 0);
 
             $this->render('measure-wizard-step-1.php', [
                 'audioFiles' => $audioFiles,
@@ -61,24 +62,48 @@ final class MeasureWizardPage extends Page
             }
 
             $audio = $this->requireAudio((int) $wizard['audio_id']);
+            $selected = $this->selectedStationIds($wizard);
 
             $wizardLines = [];
+            $lineStationIds = [];
 
             foreach ($this->services->lines->all() as $line) {
                 if ((int) $line['active'] !== 1) {
                     continue;
                 }
 
-                $line['stations'] = $this->services->lines->stations((int) $line['id']);
-                $wizardLines[] = $line;
+                $items = StationPicker::items(
+                    $this->services->lines->stations((int) $line['id']),
+                    'station_id'
+                );
+                $ids = array_column($items, 'id');
+
+                foreach ($ids as $id) {
+                    $lineStationIds[$id] = true;
+                }
+
+                $wizardLines[] = [
+                    'number' => $line['number'],
+                    'name' => $line['name'],
+                    'items' => $items,
+                    'ids' => $ids,
+                    'open' => array_intersect($ids, $selected) !== [],
+                ];
             }
+
+            $allStations = $this->services->stations->all();
+            $unassigned = array_values(array_filter(
+                $allStations,
+                static fn (array $s): bool => !isset($lineStationIds[(int) $s['id']])
+            ));
 
             $this->render('measure-wizard-step-2.php', [
                 'wizard' => $wizard,
                 'audio' => $audio,
-                'savedTargets' => $wizard['targets'] ?? [],
-                'stations' => $this->services->stations->all(),
+                'selected' => $selected,
                 'wizardLines' => $wizardLines,
+                'otherItems' => StationPicker::items($unassigned, 'id'),
+                'hasStations' => $allStations !== [],
             ]);
         }
 
@@ -315,6 +340,20 @@ final class MeasureWizardPage extends Page
         $wizard = $_SESSION[self::SESSION_KEY] ?? null;
 
         return is_array($wizard) ? $wizard : null;
+    }
+
+    /**
+     * Ausgewählte Haltestellen: nach einem Fehler die gesendeten Werte, sonst die gespeicherten Ziele.
+     *
+     * @return list<int>
+     */
+    private function selectedStationIds(?array $wizard): array
+    {
+        if ($this->error !== null && is_array($_POST['stations'] ?? null)) {
+            return array_map('intval', array_filter($_POST['stations'], 'is_scalar'));
+        }
+
+        return array_map('intval', $wizard['targets'] ?? []);
     }
 
     private function hasNameAndAudio(?array $wizard): bool

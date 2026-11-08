@@ -29,12 +29,21 @@
                     </div>
                 </div>
 
-                <a
-                    class="btn btn-primary"
-                    href="/?page=controllers&action=new"
-                >
-                    + Neuer Controller
-                </a>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a
+                        class="btn btn-outline-secondary"
+                        href="/?page=com-servers"
+                    >
+                        COM-Server
+                    </a>
+
+                    <a
+                        class="btn btn-primary"
+                        href="/?page=controllers&action=new"
+                    >
+                        + Neuer Controller
+                    </a>
+                </div>
 
             </div>
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ela\Web;
 
 use Ela\Audio;
+use Ela\ComServers;
 use Ela\Controllers;
 use Ela\Lines;
 use Ela\Measures;
@@ -21,6 +22,7 @@ final class Services
         public readonly Controllers $controllers,
         public readonly Audio $audio,
         public readonly Measures $measures,
+        public readonly ComServers $comServers,
     ) {
     }
 }
