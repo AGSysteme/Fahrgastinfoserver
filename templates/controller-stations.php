@@ -1,580 +1,324 @@
+<?php
+/**
+ * @var array $controller
+ * @var array $stations
+ * @var string|null $error
+ * @var string $csrfToken
+ */
+?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Haltestellen – Controller <?= htmlspecialchars((string) $controller['name']) ?> – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>
-Controller – Haltestellen
-</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-header h1 {
-    margin: 0;
-}
-
-main {
-    max-width: 1100px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, .08);
-}
-
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.topbar h2 {
-    margin: 0 0 8px 0;
-}
-
-.info {
-    color: #4b5563;
-}
-
-.button {
-    display: inline-block;
-
-    padding: 10px 16px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    border-radius: 8px;
-
-    font-weight: 600;
-
-    border: 0;
-
-    cursor: pointer;
-}
-
-.button:hover {
-    background: #1d4ed8;
-}
-
-.layout {
-    display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap: 25px;
-}
-
-.panel {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-
-    padding: 18px;
-
-    background: #f9fafb;
-}
-
-.panel h3 {
-    margin-top: 0;
-}
-
-.station-list {
-    min-height: 100px;
-}
-
-.station {
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    padding: 13px 15px;
-
-    margin-bottom: 8px;
-
-    background: white;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 9px;
-
-    cursor: grab;
-
-    user-select: none;
-
-    box-shadow:
-        0 1px 2px rgba(0, 0, 0, .04);
-}
-
-.station:active {
-    cursor: grabbing;
-}
-
-.station.dragging {
-    opacity: .45;
-}
-
-.station.locked {
-    background: #f3f4f6;
-    color: #9ca3af;
-    cursor: not-allowed;
-}
-
-.handle {
-    color: #6b7280;
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.station-info {
-    flex: 1;
-}
-
-.station-name {
-    font-weight: 700;
-}
-
-.station-meta {
-    color: #6b7280;
-    font-size: 13px;
-
-    margin-top: 2px;
-}
-
-.status {
-    font-size: 12px;
-    color: #6b7280;
-}
-
-.empty {
-    padding: 25px;
-
-    text-align: center;
-
-    color: #6b7280;
-
-    border: 2px dashed #d1d5db;
-
-    border-radius: 9px;
-}
-
-.actions {
-    margin-top: 25px;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-}
-
-.hint {
-    color: #6b7280;
-    font-size: 14px;
-}
-
-@media (max-width: 800px) {
-
-    .layout {
-        grid-template-columns: 1fr;
-    }
-
-    .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1100px;">
 
-<div class="card">
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
 
-<div class="topbar">
+            <!-- Überschrift -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
-<div>
+                <div>
+                    <h2 class="h4 mb-1">Haltestellen</h2>
 
-<h2>
-Haltestellen
-</h2>
+                    <div class="text-muted small">
+                        Controller:
+                        <strong>
+                            <?= htmlspecialchars((string) $controller['name']) ?>
+                        </strong>
+                    </div>
+                </div>
 
-<div class="info">
+                <a
+                    class="btn btn-secondary"
+                    href="/"
+                >
+                    ← Dashboard
+                </a>
 
-Controller:
-<strong>
-<?= htmlspecialchars(
-    (string) $controller['name']
-) ?>
-</strong>
+            </div>
 
-</div>
+            <!-- Fehlermeldung -->
+            <?php if ($error !== null): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
 
-</div>
+            <form method="post">
 
-<a
-    class="button"
-    href="/"
->
-← Dashboard
-</a>
+                <input type="hidden" name="page" value="controllers">
+                <input type="hidden" name="action" value="stations-save">
 
-</div>
+                <input
+                    type="hidden"
+                    name="controller_id"
+                    value="<?= (int) $controller['id'] ?>"
+                >
 
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="<?= htmlspecialchars($csrfToken) ?>"
+                >
 
-<form method="post">
+                <div class="row g-4">
 
-<input
-    type="hidden"
-    name="page"
-    value="controllers"
->
+                    <!-- =====================================================
+                         VERFÜGBARE HALTESTELLEN
+                         ===================================================== -->
+                    <div class="col-12 col-lg-6">
 
-<input
-    type="hidden"
-    name="action"
-    value="stations-save"
->
+                        <div class="card h-100">
+                            <div class="card-body p-3 p-md-4">
 
-<input
-    type="hidden"
-    name="controller_id"
-    value="<?= (int) $controller['id'] ?>"
->
+                                <h3 class="h5 mb-1">Verfügbare Haltestellen</h3>
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+                                <p class="text-muted small mb-3">
+                                    Haltestellen greifen und rechts hineinziehen.
+                                </p>
 
+                                <div
+                                    id="available-stations"
+                                    class="station-list"
+                                >
 
-<div class="layout">
+                                    <?php
 
+                                    $assignedIds = [];
 
-<!-- =====================================================
-     VERFÜGBARE HALTESTELLEN
-     ===================================================== -->
+                                    foreach ($stations as $station) {
 
-<div class="panel">
+                                        if (
+                                            (int) $station['assigned_controller_id']
+                                            === (int) $controller['id']
+                                        ) {
+                                            $assignedIds[] =
+                                                (int) $station['id'];
+                                        }
+                                    }
 
-<h3>
-Verfügbare Haltestellen
-</h3>
+                                    $availableCount = 0;
 
-<p class="hint">
-Haltestellen greifen und rechts hineinziehen.
-</p>
+                                    foreach ($stations as $station):
 
-<div
-    id="available-stations"
-    class="station-list"
->
+                                        $stationId =
+                                            (int) $station['id'];
 
-<?php
+                                        $assignedController =
+                                            $station['assigned_controller_id'];
 
-$assignedIds = [];
+                                        $assignedToThisController =
+                                            $assignedController !== null
+                                            && (int) $assignedController
+                                                === (int) $controller['id'];
 
-foreach ($stations as $station) {
+                                        $assignedToOtherController =
+                                            $assignedController !== null
+                                            && !$assignedToThisController;
 
-    if (
-        (int) $station['assigned_controller_id']
-        === (int) $controller['id']
-    ) {
-        $assignedIds[] =
-            (int) $station['id'];
-    }
-}
 
-$availableCount = 0;
+                                        if ($assignedToThisController) {
+                                            continue;
+                                        }
 
-foreach ($stations as $station):
+                                        $availableCount++;
 
-    $stationId =
-        (int) $station['id'];
+                                    ?>
 
-    $assignedController =
-        $station['assigned_controller_id'];
+                                        <div
+                                            class="station <?= $assignedToOtherController ? 'locked' : '' ?>"
+                                            <?= $assignedToOtherController
+                                                ? ''
+                                                : 'draggable="true"' ?>
+                                            data-station-id="<?= $stationId ?>"
+                                        >
 
-    $assignedToThisController =
-        $assignedController !== null
-        && (int) $assignedController
-            === (int) $controller['id'];
+                                            <div class="handle">☰</div>
 
-    $assignedToOtherController =
-        $assignedController !== null
-        && !$assignedToThisController;
+                                            <div class="station-info">
 
+                                                <div class="station-name">
+                                                    <?= htmlspecialchars(
+                                                        (string) $station['name']
+                                                    ) ?>
+                                                </div>
 
-    if ($assignedToThisController) {
-        continue;
-    }
+                                                <div class="station-meta">
 
-    $availableCount++;
+                                                    <?php if ($station['short_name'] !== null): ?>
+                                                        <?= htmlspecialchars(
+                                                            (string) $station['short_name']
+                                                        ) ?>
+                                                    <?php endif; ?>
 
-?>
+                                                    <?php if ($station['station_code'] !== null): ?>
+                                                        &nbsp; · &nbsp;
+                                                        <?= htmlspecialchars(
+                                                            (string) $station['station_code']
+                                                        ) ?>
+                                                    <?php endif; ?>
 
-<div
-    class="station
-        <?= $assignedToOtherController
-            ? 'locked'
-            : '' ?>"
-    <?= $assignedToOtherController
-        ? ''
-        : 'draggable="true"' ?>
-    data-station-id="<?= $stationId ?>"
->
+                                                </div>
 
-<div class="handle">
-☰
-</div>
+                                            </div>
 
-<div class="station-info">
+                                            <?php if ($assignedToOtherController): ?>
+                                                <div class="status">
+                                                    bereits vergeben
+                                                </div>
+                                            <?php endif; ?>
 
-<div class="station-name">
+                                        </div>
 
-<?= htmlspecialchars(
-    (string) $station['name']
-) ?>
+                                    <?php endforeach; ?>
 
-</div>
+                                    <?php if ($availableCount === 0): ?>
+                                        <div class="drop-zone-empty">
+                                            Keine freien Haltestellen vorhanden.
+                                        </div>
+                                    <?php endif; ?>
 
-<div class="station-meta">
+                                </div>
 
-<?php if ($station['short_name'] !== null): ?>
+                            </div>
+                        </div>
 
-<?= htmlspecialchars(
-    (string) $station['short_name']
-) ?>
+                    </div>
 
-<?php endif; ?>
+                    <!-- =====================================================
+                         HALTESTELLEN DIESES CONTROLLERS
+                         ===================================================== -->
+                    <div class="col-12 col-lg-6">
 
-<?php if ($station['station_code'] !== null): ?>
+                        <div class="card h-100">
+                            <div class="card-body p-3 p-md-4">
 
-&nbsp; · &nbsp;
+                                <h3 class="h5 mb-1">Haltestellen dieses Controllers</h3>
 
-<?= htmlspecialchars(
-    (string) $station['station_code']
-) ?>
+                                <p class="text-muted small mb-3">
+                                    Hier hineinziehen, um die Haltestelle diesem Controller zuzuordnen.
+                                </p>
 
-<?php endif; ?>
+                                <div
+                                    id="assigned-stations"
+                                    class="station-list"
+                                >
 
-</div>
+                                    <?php
 
-</div>
+                                    $assignedCount = 0;
 
-<?php if ($assignedToOtherController): ?>
+                                    foreach ($stations as $station):
 
-<div class="status">
-bereits vergeben
-</div>
+                                        if (
+                                            $station['assigned_controller_id'] === null
+                                            || (int) $station['assigned_controller_id']
+                                                !== (int) $controller['id']
+                                        ) {
+                                            continue;
+                                        }
 
-<?php endif; ?>
+                                        $assignedCount++;
 
-</div>
+                                    ?>
 
-<?php endforeach; ?>
+                                        <div
+                                            class="station"
+                                            draggable="true"
+                                            data-station-id="<?= (int) $station['id'] ?>"
+                                        >
 
+                                            <div class="handle">☰</div>
 
-<?php if ($availableCount === 0): ?>
+                                            <div class="station-info">
 
-<div class="empty">
-Keine freien Haltestellen vorhanden.
-</div>
+                                                <div class="station-name">
+                                                    <?= htmlspecialchars(
+                                                        (string) $station['name']
+                                                    ) ?>
+                                                </div>
 
-<?php endif; ?>
+                                                <div class="station-meta">
 
-</div>
+                                                    <?php if ($station['short_name'] !== null): ?>
+                                                        <?= htmlspecialchars(
+                                                            (string) $station['short_name']
+                                                        ) ?>
+                                                    <?php endif; ?>
 
-</div>
+                                                    <?php if ($station['station_code'] !== null): ?>
+                                                        &nbsp; · &nbsp;
+                                                        <?= htmlspecialchars(
+                                                            (string) $station['station_code']
+                                                        ) ?>
+                                                    <?php endif; ?>
 
+                                                </div>
 
-<!-- =====================================================
-     HALTESTELLEN DIESES CONTROLLERS
-     ===================================================== -->
+                                            </div>
 
-<div class="panel">
+                                        </div>
 
-<h3>
-Haltestellen dieses Controllers
-</h3>
+                                    <?php endforeach; ?>
 
-<p class="hint">
-Hier hineinziehen, um die Haltestelle diesem Controller zuzuordnen.
-</p>
+                                    <?php if ($assignedCount === 0): ?>
+                                        <div class="drop-zone-empty">
+                                            Noch keine Haltestelle zugeordnet.
+                                        </div>
+                                    <?php endif; ?>
 
-<div
-    id="assigned-stations"
-    class="station-list"
->
+                                </div>
 
-<?php
+                            </div>
+                        </div>
 
-$assignedCount = 0;
+                    </div>
 
-foreach ($stations as $station):
+                </div>
 
-    if (
-        $station['assigned_controller_id'] === null
-        || (int) $station['assigned_controller_id']
-            !== (int) $controller['id']
-    ) {
-        continue;
-    }
+                <!-- Aktionen -->
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
 
-    $assignedCount++;
+                    <div class="text-muted small">
+                        ☰ Haltestelle greifen und per Drag &amp; Drop verschieben.
+                    </div>
 
-?>
+                    <button type="submit" class="btn btn-primary">
+                        Haltestellen speichern
+                    </button>
 
-<div
-    class="station"
-    draggable="true"
-    data-station-id="<?= (int) $station['id'] ?>"
->
+                </div>
 
-<div class="handle">
-☰
-</div>
+            </form>
 
-<div class="station-info">
+            <div class="mt-4">
+                <a href="/" class="text-decoration-none">
+                    &larr; Zurück zum Dashboard
+                </a>
+            </div>
 
-<div class="station-name">
-
-<?= htmlspecialchars(
-    (string) $station['name']
-) ?>
-
-</div>
-
-<div class="station-meta">
-
-<?php if ($station['short_name'] !== null): ?>
-
-<?= htmlspecialchars(
-    (string) $station['short_name']
-) ?>
-
-<?php endif; ?>
-
-<?php if ($station['station_code'] !== null): ?>
-
-&nbsp; · &nbsp;
-
-<?= htmlspecialchars(
-    (string) $station['station_code']
-) ?>
-
-<?php endif; ?>
-
-</div>
-
-</div>
-
-</div>
-
-<?php endforeach; ?>
-
-
-<?php if ($assignedCount === 0): ?>
-
-<div class="empty">
-Noch keine Haltestelle zugeordnet.
-</div>
-
-<?php endif; ?>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="actions">
-
-<div class="hint">
-☰ Haltestelle greifen und per Drag & Drop verschieben.
-</div>
-
-<button
-    type="submit"
-    class="button"
->
-Haltestellen speichern
-</button>
-
-</div>
-
-</form>
-
-
-<p style="margin-top: 25px;">
-
-<a href="/">
-← Zurück zum Dashboard
-</a>
-
-</p>
-
-</div>
+        </div>
+    </div>
 
 </main>
 
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
@@ -787,11 +531,5 @@ document.querySelector('form').addEventListener(
 
 </script>
 
-
-
-
-
 </body>
-
 </html>
-

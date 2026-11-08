@@ -20,542 +20,264 @@ if (!is_array($schedule)) {
 }
 
 ?>
-
 <!DOCTYPE html>
-
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Neue Maßnahme – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Neue Maßnahme – ELA Server</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-
-    background: #f4f6f8;
-
-    color: #222;
-
-    font-family:
-        Arial,
-        sans-serif;
-}
-
-main {
-    max-width: 1000px;
-
-    margin: 40px auto;
-
-    padding: 0 20px;
-}
-
-.card {
-    background: #fff;
-
-    border-radius: 12px;
-
-    padding: 30px;
-
-    box-shadow:
-        0 2px 10px rgba(0,0,0,.08);
-}
-
-h1 {
-    margin-top: 0;
-}
-
-.subtitle {
-    color: #777;
-
-    margin-bottom: 25px;
-}
-
-.section {
-    border: 1px solid #dfe3e8;
-
-    border-radius: 10px;
-
-    margin-bottom: 20px;
-
-    overflow: hidden;
-}
-
-.section-header {
-    padding: 14px 18px;
-
-    background: #f3f5f8;
-
-    border-bottom: 1px solid #dfe3e8;
-
-    font-weight: bold;
-
-    font-size: 18px;
-}
-
-.section-content {
-    padding: 18px;
-}
-
-.info-row {
-    display: grid;
-
-    grid-template-columns: 180px 1fr;
-
-    gap: 15px;
-
-    padding: 8px 0;
-
-    border-bottom: 1px solid #eee;
-}
-
-.info-row:last-child {
-    border-bottom: 0;
-}
-
-.info-label {
-    color: #777;
-
-    font-weight: bold;
-}
-
-.line-summary {
-    margin-bottom: 18px;
-}
-
-.line-summary:last-child {
-    margin-bottom: 0;
-}
-
-.line-title {
-    font-weight: bold;
-
-    font-size: 17px;
-
-    margin-bottom: 8px;
-}
-
-.station-summary {
-    margin-left: 18px;
-
-    margin-bottom: 12px;
-}
-
-.station-title {
-    font-weight: bold;
-
-    margin-bottom: 4px;
-}
-
-.station-list {
-    margin-left: 18px;
-
-    color: #555;
-
-    line-height: 1.6;
-}
-
-.badge {
-    display: inline-block;
-
-    padding: 4px 9px;
-
-    border-radius: 5px;
-
-    background: #e8f1ff;
-
-    color: #1464c4;
-
-    font-size: 14px;
-
-    font-weight: bold;
-}
-
-.form-actions {
-    display: flex;
-
-    justify-content: space-between;
-
-    gap: 10px;
-
-    margin-top: 30px;
-}
-
-.button {
-    display: inline-block;
-
-    padding: 11px 18px;
-
-    border: 0;
-
-    border-radius: 7px;
-
-    background: #1677ff;
-
-    color: white;
-
-    text-decoration: none;
-
-    cursor: pointer;
-
-    font-size: 16px;
-}
-
-.button:hover {
-    background: #0d65dc;
-}
-
-.button-secondary {
-    background: #777;
-}
-
-.button-secondary:hover {
-    background: #666;
-}
-
-.button-success {
-    background: #16a34a;
-}
-
-.button-success:hover {
-    background: #12813a;
-}
-
-.warning {
-    background: #fff8e6;
-
-    border: 1px solid #f0d58a;
-
-    color: #755b16;
-
-    padding: 12px 15px;
-
-    border-radius: 7px;
-
-    margin-bottom: 20px;
-}
-
-@media (max-width: 700px) {
-
-    .info-row {
-        grid-template-columns: 1fr;
-        gap: 3px;
-    }
-
-    .form-actions {
-        flex-direction: column-reverse;
-    }
-
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<main>
-
-<div class="card">
-
-<h1>Neue Maßnahme</h1>
-
-<div class="subtitle">
-Schritt 4 – Zusammenfassung
-</div>
-
-
-<div class="warning">
-Bitte überprüfe die Angaben vor dem Erstellen der Maßnahme.
-</div>
-
-
-<!-- ===================================================== -->
-<!-- Allgemeine Informationen -->
-<!-- ===================================================== -->
-
-<div class="section">
-
-<div class="section-header">
-Allgemeine Informationen
-</div>
-
-<div class="section-content">
-
-<div class="info-row">
-
-<div class="info-label">
-Maßnahme
-</div>
-
-<div>
-<?= htmlspecialchars(
-    (string) ($wizard['name'] ?? '')
-) ?>
-</div>
-
-</div>
-
-
-<div class="info-row">
-
-<div class="info-label">
-Ansage
-</div>
-
-<div>
-
-<?= htmlspecialchars(
-    (string) ($audio['text'] ?? '')
-) ?>
-
-<?php if (!empty($audio['voice'])): ?>
-
-<span class="badge">
-<?= htmlspecialchars(
-    ucfirst(
-        (string) $audio['voice']
-    )
-) ?>
-</span>
-
-<?php endif; ?>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- ===================================================== -->
-<!-- Haltestellen -->
-<!-- ===================================================== -->
-
-<div class="section">
-
-<div class="section-header">
-Haltestellen
-</div>
-
-<div class="section-content">
-
-<?php if (!$targets): ?>
-
-<div>
-Keine Ziele ausgewählt.
-</div>
-
-<?php else: ?>
-
-<ul>
-<?php foreach ($targets as $stationId): ?>
-<?php $station = $stationsRepository->find((int) $stationId); ?>
-<li><?= htmlspecialchars((string) ($station['name'] ?? 'Haltestelle nicht mehr vorhanden')) ?></li>
-<?php endforeach; ?>
-</ul>
-<?php endif; ?>
-</div>
-</div>
-<!-- Zeitliche Steuerung -->
-<!-- ===================================================== -->
-
-<div class="section">
-
-<div class="section-header">
-Zeitliche Steuerung
-</div>
-
-<div class="section-content">
-
-<?php if (
-    ($schedule['type'] ?? '') === 'once'
-): ?>
-
-<div class="info-row">
-
-<div class="info-label">
-Wiedergabe
-</div>
-
-<div>
-<span class="badge">
-Nur einmal abspielen
-</span>
-</div>
-
-</div>
-
-<?php else: ?>
-
-<div class="info-row">
-
-<div class="info-label">
-Wiedergabe
-</div>
-
-<div>
-<span class="badge">
-Zeitraum
-</span>
-</div>
-
-</div>
-
-
-<div class="info-row">
-
-<div class="info-label">
-Beginn
-</div>
-
-<div>
-<?= htmlspecialchars(
-    (string) ($schedule['start_at'] ?? '')
-) ?>
-</div>
-
-</div>
-
-
-<div class="info-row">
-
-<div class="info-label">
-Ende
-</div>
-
-<div>
-<?= htmlspecialchars(
-    (string) ($schedule['end_at'] ?? '')
-) ?>
-</div>
-
-</div>
-
-
-<div class="info-row">
-
-<div class="info-label">
-Intervall
-</div>
-
-<div>
-
-<?php
-
-$interval =
-    (int) (
-        $schedule['interval'] ?? 0
-    );
-
-$intervalLabels = [
-    5 => '5 Minuten',
-    10 => '10 Minuten',
-    30 => '30 Minuten',
-    60 => '1 Stunde'
-];
-
-?>
-
-<?= htmlspecialchars(
-    $intervalLabels[$interval]
-        ?? 'Unbekannt'
-) ?>
-
-</div>
-
-</div>
-
-
-<div class="info-row">
-
-<div class="info-label">
-Nachts deaktivieren
-</div>
-
-<div>
-
-<?= !empty(
-    $schedule['disable_night']
-)
-    ? 'Ja – 22:00 bis 06:00 Uhr'
-    : 'Nein'
-?>
-
-</div>
-
-</div>
-
-<?php endif; ?>
-
-</div>
-
-</div>
-
-
-<!-- ===================================================== -->
-<!-- Aktionen -->
-<!-- ===================================================== -->
-
-<div class="form-actions">
-
-<a
-    href="/?page=measure-wizard&step=3"
-    class="button button-secondary"
->
-← Zurück
-</a>
-
-
-<form method="post">
-
-<input
-    type="hidden"
-    name="page"
-    value="measure-wizard"
->
-
-<input
-    type="hidden"
-    name="action"
-    value="measure-wizard-finish"
->
-
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
-
-<button
-    type="submit"
-    class="button button-success"
->
-Maßnahme erstellen
-</button>
-
-</form>
-
-</div>
-
-</div>
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
+</header>
+
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1000px;">
+
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
+
+            <!-- Überschrift -->
+            <div class="mb-4">
+                <h2 class="h4 mb-1">Neue Maßnahme</h2>
+
+                <div class="text-muted small">
+                    Schritt 4 – Zusammenfassung
+                </div>
+            </div>
+
+            <!-- Hinweis -->
+            <div class="alert alert-warning mb-4" role="alert">
+                Bitte überprüfe die Angaben vor dem Erstellen der Maßnahme.
+            </div>
+
+            <!-- Allgemeine Informationen -->
+            <div class="card mb-4">
+                <div class="card-header fw-semibold">
+                    Allgemeine Informationen
+                </div>
+
+                <div class="card-body p-0">
+
+                    <div class="row g-0 border-bottom px-3 py-2">
+                        <div class="col-12 col-md-4 text-muted fw-semibold">
+                            Maßnahme
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <?= htmlspecialchars(
+                                (string) ($wizard['name'] ?? '')
+                            ) ?>
+                        </div>
+                    </div>
+
+                    <div class="row g-0 px-3 py-2">
+                        <div class="col-12 col-md-4 text-muted fw-semibold">
+                            Ansage
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <?= htmlspecialchars(
+                                (string) ($audio['text'] ?? '')
+                            ) ?>
+
+                            <?php if (!empty($audio['voice'])): ?>
+                                <span class="badge text-bg-primary ms-1">
+                                    <?= htmlspecialchars(
+                                        ucfirst(
+                                            (string) $audio['voice']
+                                        )
+                                    ) ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Haltestellen -->
+            <div class="card mb-4">
+                <div class="card-header fw-semibold">
+                    Haltestellen
+                </div>
+
+                <div class="card-body">
+
+                    <?php if (!$targets): ?>
+
+                        <div class="text-muted">
+                            Keine Ziele ausgewählt.
+                        </div>
+
+                    <?php else: ?>
+
+                        <ul class="mb-0">
+                            <?php foreach ($targets as $stationId): ?>
+                                <?php $station = $stationsRepository->find((int) $stationId); ?>
+                                <li><?= htmlspecialchars((string) ($station['name'] ?? 'Haltestelle nicht mehr vorhanden')) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+
+                    <?php endif; ?>
+
+                </div>
+            </div>
+
+            <!-- Zeitliche Steuerung -->
+            <div class="card mb-4">
+                <div class="card-header fw-semibold">
+                    Zeitliche Steuerung
+                </div>
+
+                <div class="card-body p-0">
+
+                    <?php if (
+                        ($schedule['type'] ?? '') === 'once'
+                    ): ?>
+
+                        <div class="row g-0 px-3 py-2">
+                            <div class="col-12 col-md-4 text-muted fw-semibold">
+                                Wiedergabe
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <span class="badge text-bg-primary">
+                                    Nur einmal abspielen
+                                </span>
+                            </div>
+                        </div>
+
+                    <?php else: ?>
+
+                        <div class="row g-0 border-bottom px-3 py-2">
+                            <div class="col-12 col-md-4 text-muted fw-semibold">
+                                Wiedergabe
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <span class="badge text-bg-primary">
+                                    Zeitraum
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row g-0 border-bottom px-3 py-2">
+                            <div class="col-12 col-md-4 text-muted fw-semibold">
+                                Beginn
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <?= htmlspecialchars(
+                                    (string) ($schedule['start_at'] ?? '')
+                                ) ?>
+                            </div>
+                        </div>
+
+                        <div class="row g-0 border-bottom px-3 py-2">
+                            <div class="col-12 col-md-4 text-muted fw-semibold">
+                                Ende
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <?= htmlspecialchars(
+                                    (string) ($schedule['end_at'] ?? '')
+                                ) ?>
+                            </div>
+                        </div>
+
+                        <div class="row g-0 border-bottom px-3 py-2">
+                            <div class="col-12 col-md-4 text-muted fw-semibold">
+                                Intervall
+                            </div>
+                            <div class="col-12 col-md-8">
+
+                                <?php
+                                $interval =
+                                    (int) (
+                                        $schedule['interval'] ?? 0
+                                    );
+
+                                $intervalLabels = [
+                                    5 => '5 Minuten',
+                                    10 => '10 Minuten',
+                                    30 => '30 Minuten',
+                                    60 => '1 Stunde'
+                                ];
+                                ?>
+
+                                <?= htmlspecialchars(
+                                    $intervalLabels[$interval]
+                                        ?? 'Unbekannt'
+                                ) ?>
+
+                            </div>
+                        </div>
+
+                        <div class="row g-0 px-3 py-2">
+                            <div class="col-12 col-md-4 text-muted fw-semibold">
+                                Nachts deaktivieren
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <?= !empty(
+                                    $schedule['disable_night']
+                                )
+                                    ? 'Ja – 22:00 bis 06:00 Uhr'
+                                    : 'Nein'
+                                ?>
+                            </div>
+                        </div>
+
+                    <?php endif; ?>
+
+                </div>
+            </div>
+
+            <!-- Aktionen -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-4">
+
+                <a
+                    href="/?page=measure-wizard&step=3"
+                    class="btn btn-secondary"
+                >
+                    ← Zurück
+                </a>
+
+                <form method="post">
+
+                    <input
+                        type="hidden"
+                        name="page"
+                        value="measure-wizard"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="measure-wizard-finish"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="<?= htmlspecialchars($csrfToken) ?>"
+                    >
+
+                    <button type="submit" class="btn btn-success">
+                        Maßnahme erstellen
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
 
 </main>
 
-</body>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>

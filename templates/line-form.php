@@ -1,277 +1,179 @@
+<?php
+/**
+ * @var array|null $line
+ * @var string|null $error
+ * @var string $csrfToken
+ */
+?>
 <!DOCTYPE html>
-
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title><?= $line ? 'Linie bearbeiten' : 'Neue Linie' ?> – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>
-<?= $line ? 'Linie bearbeiten' : 'Neue Linie' ?>
-- ELA Server
-</title>
-
-<style>
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-main {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-
-    box-shadow:
-        0 2px 8px rgba(0,0,0,.08);
-}
-
-label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-input,
-textarea {
-    width: 100%;
-
-    padding: 10px;
-
-    border:
-        1px solid #d1d5db;
-
-    border-radius: 8px;
-
-    font: inherit;
-}
-
-textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-button,
-a.button {
-    display: inline-block;
-
-    padding: 10px 16px;
-
-    border: 0;
-    border-radius: 8px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.button-secondary {
-    background: #6b7280 !important;
-}
-
-.error {
-    background: #fee2e2;
-    color: #991b1b;
-
-    padding: 12px;
-
-    margin-bottom: 20px;
-
-    border-radius: 8px;
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 800px;">
 
-<div class="card">
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
 
-<h2>
-<?= $line
-    ? 'Linie bearbeiten'
-    : 'Neue Linie'
-?>
-</h2>
+            <!-- Überschrift -->
+            <div class="mb-4">
+                <h2 class="h4 mb-1">
+                    <?= $line ? 'Linie bearbeiten' : 'Neue Linie' ?>
+                </h2>
 
-<?php if ($error !== null): ?>
+                <div class="text-muted small">
+                    <?= $line
+                        ? 'Bezeichnung und Status der Linie bearbeiten.'
+                        : 'Eine neue Linie anlegen.' ?>
+                </div>
+            </div>
 
-<div class="error">
+            <!-- Fehlermeldung -->
+            <?php if ($error !== null): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
 
-<?= htmlspecialchars($error) ?>
+            <form method="post">
 
-</div>
+                <input type="hidden" name="page" value="lines">
 
-<?php endif; ?>
+                <input
+                    type="hidden"
+                    name="action"
+                    value="<?= $line ? 'update' : 'create' ?>"
+                >
 
-<form method="post">
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="<?= htmlspecialchars($csrfToken) ?>"
+                >
 
-<input
-    type="hidden"
-    name="page"
-    value="lines"
->
+                <?php if ($line): ?>
+                    <input
+                        type="hidden"
+                        name="id"
+                        value="<?= (int) $line['id'] ?>"
+                    >
+                <?php endif; ?>
 
-<input
-    type="hidden"
-    name="action"
-    value="<?= $line ? 'update' : 'create' ?>"
->
+                <div class="row g-3">
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+                    <div class="col-12 col-md-6">
+                        <label for="number" class="form-label">
+                            Liniennummer <span class="text-danger">*</span>
+                        </label>
 
-<?php if ($line): ?>
+                        <input
+                            id="number"
+                            type="text"
+                            name="number"
+                            class="form-control"
+                            maxlength="50"
+                            required
+                            value="<?= htmlspecialchars(
+                                (string) ($line['number'] ?? '')
+                            ) ?>"
+                        >
+                    </div>
 
-<input
-    type="hidden"
-    name="id"
-    value="<?= (int) $line['id'] ?>"
->
+                    <div class="col-12 col-md-6">
+                        <label for="name" class="form-label">
+                            Name
+                        </label>
 
-<?php endif; ?>
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            maxlength="200"
+                            placeholder="z. B. Linie 18"
+                            value="<?= htmlspecialchars(
+                                (string) ($line['name'] ?? '')
+                            ) ?>"
+                        >
+                    </div>
 
-<div class="form-group">
+                    <div class="col-12">
+                        <label for="description" class="form-label">
+                            Beschreibung
+                        </label>
 
-<label for="number">
-Liniennummer *
-</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            class="form-control"
+                            rows="4"
+                        ><?= htmlspecialchars(
+                            (string) ($line['description'] ?? '')
+                        ) ?></textarea>
+                    </div>
 
-<input
-    id="number"
-    type="text"
-    name="number"
-    maxlength="50"
-    required
-    value="<?= htmlspecialchars(
-        (string) ($line['number'] ?? '')
-    ) ?>"
->
+                    <?php if ($line): ?>
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input
+                                    id="active"
+                                    type="checkbox"
+                                    name="active"
+                                    value="1"
+                                    class="form-check-input"
+                                    role="switch"
+                                    <?= (int) $line['active'] === 1
+                                        ? 'checked'
+                                        : '' ?>
+                                >
 
-</div>
+                                <label for="active" class="form-check-label">
+                                    Aktiv
+                                </label>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
-<div class="form-group">
+                </div>
 
-<label for="name">
-Name
-</label>
+                <!-- Aktionen -->
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-4">
 
-<input
-    id="name"
-    type="text"
-    name="name"
-    maxlength="200"
-    placeholder="z. B. Linie 18"
-    value="<?= htmlspecialchars(
-        (string) ($line['name'] ?? '')
-    ) ?>"
->
+                    <a
+                        href="/?page=lines"
+                        class="btn btn-secondary"
+                    >
+                        &larr; Abbrechen
+                    </a>
 
-</div>
+                    <button type="submit" class="btn btn-primary">
+                        Speichern
+                    </button>
 
-<div class="form-group">
+                </div>
 
-<label for="description">
-Beschreibung
-</label>
+            </form>
 
-<textarea
-    id="description"
-    name="description"
-><?= htmlspecialchars(
-    (string) ($line['description'] ?? '')
-) ?></textarea>
-
-</div>
-
-<?php if ($line): ?>
-
-<div class="form-group">
-
-<label>
-
-<input
-    type="checkbox"
-    name="active"
-    value="1"
-    <?= (int) $line['active'] === 1
-        ? 'checked'
-        : '' ?>
->
-
- Aktiv
-
-</label>
-
-</div>
-
-<?php endif; ?>
-
-<button type="submit">
-    Speichern
-</button>
-
-<a
-    class="button button-secondary"
-    href="/?page=lines"
->
-    Abbrechen
-</a>
-
-</form>
-
-</div>
+        </div>
+    </div>
 
 </main>
 
-</body>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>

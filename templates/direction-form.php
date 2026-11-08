@@ -1,296 +1,183 @@
+<?php
+/**
+ * @var array $line
+ * @var array|null $direction
+ * @var string|null $error
+ * @var string $csrfToken
+ */
+?>
 <!DOCTYPE html>
-
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title><?= $direction ? 'Richtung bearbeiten' : 'Neue Richtung' ?> – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>
-<?= $direction ? 'Richtung bearbeiten' : 'Neue Richtung' ?>
-</title>
-
-<style>
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-main {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-
-    box-shadow:
-        0 2px 8px rgba(0,0,0,.08);
-}
-
-label {
-    font-weight: 600;
-}
-
-input {
-    width: 100%;
-    padding: 10px;
-
-    margin-top: 6px;
-
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-
-    font-size: 16px;
-}
-
-input[type="checkbox"] {
-    width: auto;
-}
-
-.field {
-    margin-bottom: 20px;
-}
-
-.actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 25px;
-}
-
-button,
-.button {
-    display: inline-block;
-
-    border: 0;
-    border-radius: 8px;
-
-    padding: 10px 16px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.button-secondary {
-    background: #6b7280;
-}
-
-.error {
-    background: #fee2e2;
-    color: #991b1b;
-
-    padding: 12px;
-
-    margin-bottom: 20px;
-
-    border-radius: 8px;
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 800px;">
 
-<div class="card">
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
 
-<h2>
-<?= $direction
-    ? 'Richtung bearbeiten'
-    : 'Neue Richtung'
-?>
-</h2>
+            <!-- Überschrift -->
+            <div class="mb-4">
+                <h2 class="h4 mb-1">
+                    <?= $direction ? 'Richtung bearbeiten' : 'Neue Richtung' ?>
+                </h2>
 
-<p>
+                <div class="text-muted small">
+                    Linie
+                    <strong>
+                        <?= htmlspecialchars((string) $line['number']) ?>
+                    </strong>
+                    –
+                    <?= htmlspecialchars((string) ($line['name'] ?? '')) ?>
+                </div>
+            </div>
 
-Linie
-<strong>
-<?= htmlspecialchars((string) $line['number']) ?>
-</strong>
+            <!-- Fehlermeldung -->
+            <?php if ($error !== null): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
 
-–
+            <form method="post">
 
-<?= htmlspecialchars((string) ($line['name'] ?? '')) ?>
+                <input type="hidden" name="page" value="lines">
 
-</p>
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="<?= htmlspecialchars($csrfToken) ?>"
+                >
 
-<?php if ($error !== null): ?>
+                <?php if ($direction): ?>
 
-<div class="error">
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="direction-update"
+                    >
 
-<?= htmlspecialchars($error) ?>
+                    <input
+                        type="hidden"
+                        name="id"
+                        value="<?= (int) $direction['id'] ?>"
+                    >
 
-</div>
+                <?php else: ?>
 
-<?php endif; ?>
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="direction-create"
+                    >
 
-<form method="post">
+                    <input
+                        type="hidden"
+                        name="line_id"
+                        value="<?= (int) $line['id'] ?>"
+                    >
 
-<input
-    type="hidden"
-    name="page"
-    value="lines"
->
+                <?php endif; ?>
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+                <div class="row g-3">
 
-<?php if ($direction): ?>
+                    <div class="col-12">
+                        <label for="name" class="form-label">
+                            Bezeichnung <span class="text-danger">*</span>
+                        </label>
 
-<input
-    type="hidden"
-    name="action"
-    value="direction-update"
->
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            required
+                            maxlength="200"
+                            value="<?= htmlspecialchars(
+                                (string) ($direction['name'] ?? '')
+                            ) ?>"
+                        >
+                    </div>
 
-<input
-    type="hidden"
-    name="id"
-    value="<?= (int) $direction['id'] ?>"
->
+                    <div class="col-12">
+                        <label for="destination" class="form-label">
+                            Ziel
+                        </label>
 
-<?php else: ?>
+                        <input
+                            id="destination"
+                            type="text"
+                            name="destination"
+                            class="form-control"
+                            maxlength="200"
+                            value="<?= htmlspecialchars(
+                                (string) ($direction['destination'] ?? '')
+                            ) ?>"
+                        >
+                    </div>
 
-<input
-    type="hidden"
-    name="action"
-    value="direction-create"
->
+                    <?php if ($direction): ?>
+                        <div class="col-12">
+                            <div class="form-check form-switch p-3 border rounded">
+                                <input
+                                    id="active"
+                                    type="checkbox"
+                                    name="active"
+                                    value="1"
+                                    class="form-check-input"
+                                    role="switch"
+                                    <?= (int) $direction['active'] === 1
+                                        ? 'checked'
+                                        : '' ?>
+                                >
 
-<input
-    type="hidden"
-    name="line_id"
-    value="<?= (int) $line['id'] ?>"
->
+                                <label for="active" class="form-check-label">
+                                    Aktiv
+                                </label>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
-<?php endif; ?>
+                </div>
 
+                <!-- Aktionen -->
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-4">
 
-<div class="field">
+                    <a
+                        class="btn btn-secondary"
+                        href="/?page=lines&action=directions&id=<?= (int) $line['id'] ?>"
+                    >
+                        Abbrechen
+                    </a>
 
-<label for="name">
-Bezeichnung
-</label>
+                    <button type="submit" class="btn btn-primary">
+                        Speichern
+                    </button>
 
-<input
-    id="name"
-    type="text"
-    name="name"
-    required
-    maxlength="200"
-    value="<?= htmlspecialchars(
-        (string) ($direction['name'] ?? '')
-    ) ?>"
->
+                </div>
 
-</div>
+            </form>
 
-
-<div class="field">
-
-<label for="destination">
-Ziel
-</label>
-
-<input
-    id="destination"
-    type="text"
-    name="destination"
-    maxlength="200"
-    value="<?= htmlspecialchars(
-        (string) ($direction['destination'] ?? '')
-    ) ?>"
->
-
-</div>
-
-
-<?php if ($direction): ?>
-
-<div class="field">
-
-<label>
-
-<input
-    type="checkbox"
-    name="active"
-    value="1"
-    <?= (int) $direction['active'] === 1
-        ? 'checked'
-        : '' ?>
->
-
-Aktiv
-
-</label>
-
-</div>
-
-<?php endif; ?>
-
-
-<div class="actions">
-
-<button type="submit">
-Speichern
-</button>
-
-<a
-    class="button button-secondary"
-    href="/?page=lines&action=directions&id=<?= (int) $line['id'] ?>"
->
-Abbrechen
-</a>
-
-</div>
-
-</form>
-
-</div>
+        </div>
+    </div>
 
 </main>
 
-</body>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>

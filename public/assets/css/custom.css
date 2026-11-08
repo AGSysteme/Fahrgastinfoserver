@@ -138,3 +138,84 @@ a:hover {
     padding: 12px;
     min-width: 0;
 }
+
+/* Drag-&-Drop-Listen (Haltestellen-Zuordnung) */
+
+.station-list {
+    min-height: 100px;
+}
+
+.station {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    background-color: #171e29;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 9px;
+    cursor: grab;
+    user-select: none;
+}
+
+.station:active {
+    cursor: grabbing;
+}
+
+.station.dragging {
+    opacity: .45;
+}
+
+.station.locked {
+    background-color: #1b212c;
+    color: #6b7689;
+    cursor: not-allowed;
+}
+
+.station .handle {
+    color: var(--ela-muted);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.station-info {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.station-name {
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.station-meta {
+    color: var(--ela-muted);
+    font-size: .8125rem;
+    margin-top: 2px;
+}
+
+.station .status {
+    font-size: .75rem;
+    color: var(--ela-muted);
+}
+
+.sequence {
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bs-primary);
+    color: #fff;
+    border-radius: 50%;
+    font-size: .875rem;
+    font-weight: 700;
+}
+
+.drop-zone-empty {
+    padding: 25px;
+    text-align: center;
+    color: var(--ela-muted);
+    border: 2px dashed var(--bs-border-color);
+    border-radius: 9px;
+}

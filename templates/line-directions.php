@@ -1,318 +1,180 @@
+<?php
+/**
+ * @var array $line
+ * @var array $directions
+ * @var string|null $error
+ * @var string $csrfToken
+ */
+?>
 <!DOCTYPE html>
-
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Richtungen – <?= htmlspecialchars((string) $line['number']) ?> – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>
-Richtungen – <?= htmlspecialchars((string) $line['number']) ?>
-</title>
-
-<style>
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-main {
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-
-    box-shadow:
-        0 2px 8px rgba(0,0,0,.08);
-}
-
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-
-    margin-bottom: 20px;
-}
-
-.direction {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-
-    padding: 18px;
-
-    margin-bottom: 15px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-}
-
-.direction-info strong {
-    display: block;
-    font-size: 18px;
-}
-
-.direction-info span {
-    color: #6b7280;
-}
-
-.actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.button,
-button {
-    display: inline-block;
-
-    border: 0;
-    border-radius: 8px;
-
-    padding: 10px 16px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.button:hover,
-button:hover {
-    background: #1d4ed8;
-}
-
-.button-secondary {
-    background: #6b7280 !important;
-}
-
-.button-danger {
-    background: #dc2626 !important;
-}
-
-.error {
-    background: #fee2e2;
-    color: #991b1b;
-
-    padding: 12px;
-
-    margin-bottom: 20px;
-
-    border-radius: 8px;
-}
-
-.active {
-    color: #15803d;
-    font-weight: 600;
-}
-
-.inactive {
-    color: #b91c1c;
-    font-weight: 600;
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1000px;">
 
-<div class="card">
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
 
-<div class="topbar">
+            <!-- Überschrift und neue Richtung -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
-<div>
+                <div>
+                    <h2 class="h4 mb-1">
+                        Linie <?= htmlspecialchars((string) $line['number']) ?>
+                    </h2>
 
-<h2>
-Linie <?= htmlspecialchars((string) $line['number']) ?>
-</h2>
+                    <div class="text-muted small">
+                        <?= htmlspecialchars((string) ($line['name'] ?? '')) ?>
+                    </div>
+                </div>
 
-<p>
-<?= htmlspecialchars((string) ($line['name'] ?? '')) ?>
-</p>
+                <a
+                    class="btn btn-primary"
+                    href="/?page=lines&action=direction-new&id=<?= (int) $line['id'] ?>"
+                >
+                    + Neue Richtung
+                </a>
 
-</div>
+            </div>
 
-<a
-    class="button"
-    href="/?page=lines&action=direction-new&id=<?= (int) $line['id'] ?>"
->
-    + Neue Richtung
-</a>
+            <!-- Fehlermeldung -->
+            <?php if ($error !== null): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
 
-</div>
+            <!-- Richtungen -->
+            <?php if (!$directions): ?>
 
-<?php if ($error !== null): ?>
+                <div class="alert alert-secondary mb-0">
+                    Für diese Linie wurden noch keine Richtungen angelegt.
+                </div>
 
-<div class="error">
+            <?php else: ?>
 
-<?= htmlspecialchars($error) ?>
+                <div class="row g-3">
 
-</div>
+                    <?php foreach ($directions as $direction): ?>
 
-<?php endif; ?>
+                        <div class="col-12">
 
-<?php if (!$directions): ?>
+                            <div class="card">
+                                <div class="card-body p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
 
-<p>
-Für diese Linie wurden noch keine Richtungen angelegt.
-</p>
+                                    <div class="flex-grow-1">
 
-<?php else: ?>
+                                        <div class="fs-5 fw-semibold text-break">
+                                            <?= htmlspecialchars((string) $direction['name']) ?>
+                                        </div>
 
-<?php foreach ($directions as $direction): ?>
+                                        <div class="text-muted small">
+                                            Ziel:
+                                            <?= htmlspecialchars((string) $direction['destination']) ?>
+                                        </div>
 
-<div class="direction">
+                                        <div class="mt-1">
+                                            <?php if ((int) $direction['active'] === 1): ?>
+                                                <span class="badge text-bg-success">Aktiv</span>
+                                            <?php else: ?>
+                                                <span class="badge text-bg-danger">Inaktiv</span>
+                                            <?php endif; ?>
+                                        </div>
 
-<div class="direction-info">
+                                    </div>
 
-<strong>
-<?= htmlspecialchars(
-    (string) $direction['name']
-) ?>
-</strong>
+                                    <div class="d-flex flex-wrap gap-2">
 
-<span>
-Ziel:
-<?= htmlspecialchars(
-    (string) $direction['destination']
-) ?>
-</span>
+                                        <a
+                                            class="btn btn-sm btn-primary"
+                                            href="/?page=lines&action=direction-edit&id=<?= (int) $direction['id'] ?>"
+                                        >
+                                            Bearbeiten
+                                        </a>
 
-<br>
+                                        <a
+                                            class="btn btn-sm btn-secondary"
+                                            href="/?page=lines&action=direction-stations&id=<?= (int) $direction['id'] ?>"
+                                        >
+                                            Haltestellen
+                                        </a>
 
-<?php if ((int) $direction['active'] === 1): ?>
+                                        <form
+                                            method="post"
+                                            onsubmit="return confirm('Diese Richtung wirklich löschen?');"
+                                        >
 
-<span class="active">
-Aktiv
-</span>
+                                            <input
+                                                type="hidden"
+                                                name="page"
+                                                value="lines"
+                                            >
 
-<?php else: ?>
+                                            <input
+                                                type="hidden"
+                                                name="action"
+                                                value="direction-delete"
+                                            >
 
-<span class="inactive">
-Inaktiv
-</span>
+                                            <input
+                                                type="hidden"
+                                                name="id"
+                                                value="<?= (int) $direction['id'] ?>"
+                                            >
 
-<?php endif; ?>
+                                            <input
+                                                type="hidden"
+                                                name="csrf_token"
+                                                value="<?= htmlspecialchars($csrfToken) ?>"
+                                            >
 
-</div>
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                Löschen
+                                            </button>
 
-<div class="actions">
+                                        </form>
 
-<a
-    class="button"
-    href="/?page=lines&action=direction-edit&id=<?= (int) $direction['id'] ?>"
->
-    Bearbeiten
-</a>
+                                    </div>
 
-<a
-    class="button button-secondary"
-    href="/?page=lines&action=direction-stations&id=<?= (int) $direction['id'] ?>"
->
-    Haltestellen
-</a>
+                                </div>
+                            </div>
 
-<form
-    method="post"
-    onsubmit="return confirm('Diese Richtung wirklich löschen?');"
->
+                        </div>
 
-<input
-    type="hidden"
-    name="page"
-    value="lines"
->
+                    <?php endforeach; ?>
 
-<input
-    type="hidden"
-    name="action"
-    value="direction-delete"
->
+                </div>
 
-<input
-    type="hidden"
-    name="id"
-    value="<?= (int) $direction['id'] ?>"
->
+            <?php endif; ?>
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+            <!-- Zurück -->
+            <div class="mt-4">
+                <a href="/?page=lines" class="text-decoration-none">
+                    &larr; Zurück zu den Linien
+                </a>
+            </div>
 
-<button
-    type="submit"
-    class="button-danger"
->
-    Löschen
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-<?php endforeach; ?>
-
-<?php endif; ?>
-
-<p style="margin-top: 25px;">
-
-<a href="/?page=lines">
-← Zurück zu den Linien
-</a>
-
-</p>
-
-</div>
+        </div>
+    </div>
 
 </main>
 
-</body>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>

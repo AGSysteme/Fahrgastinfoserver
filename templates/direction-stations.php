@@ -1,572 +1,305 @@
+<?php
+/**
+ * @var array $line
+ * @var array $direction
+ * @var array $stations        Der Richtung zugeordnete Haltestellen (mit sequence)
+ * @var array $allStations     Alle Haltestellen
+ * @var string|null $error
+ * @var string $csrfToken
+ */
+?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Haltestellen – Linie <?= htmlspecialchars((string) $line['number']) ?> – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>
-Haltestellen – Linie
-<?= htmlspecialchars((string) $line['number']) ?>
-</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-header h1 {
-    margin: 0;
-}
-
-main {
-    max-width: 1100px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, .08);
-}
-
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.topbar h2 {
-    margin: 0 0 8px 0;
-}
-
-.info {
-    color: #4b5563;
-}
-
-.button {
-    display: inline-block;
-
-    padding: 10px 16px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    border-radius: 8px;
-
-    font-weight: 600;
-
-    border: 0;
-
-    cursor: pointer;
-}
-
-.button:hover {
-    background: #1d4ed8;
-}
-
-.layout {
-    display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap: 25px;
-}
-
-.panel {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-
-    padding: 18px;
-
-    background: #f9fafb;
-}
-
-.panel h3 {
-    margin-top: 0;
-}
-
-.station-list {
-    min-height: 100px;
-}
-
-.station {
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    padding: 13px 15px;
-
-    margin-bottom: 8px;
-
-    background: white;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 9px;
-
-    cursor: grab;
-
-    user-select: none;
-
-    box-shadow:
-        0 1px 2px rgba(0, 0, 0, .04);
-}
-
-.station:active {
-    cursor: grabbing;
-}
-
-.station.dragging {
-    opacity: .45;
-}
-
-.handle {
-    color: #6b7280;
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.station-info {
-    flex: 1;
-}
-
-.station-name {
-    font-weight: 700;
-}
-
-.station-meta {
-    color: #6b7280;
-    font-size: 13px;
-
-    margin-top: 2px;
-}
-
-.sequence {
-    min-width: 32px;
-
-    height: 32px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background: #2563eb;
-
-    color: white;
-
-    border-radius: 50%;
-
-    font-size: 14px;
-
-    font-weight: 700;
-}
-
-.drop-placeholder {
-    height: 55px;
-
-    margin-bottom: 8px;
-
-    border: 2px dashed #60a5fa;
-
-    border-radius: 9px;
-
-    background: #eff6ff;
-}
-
-.empty {
-    padding: 25px;
-
-    text-align: center;
-
-    color: #6b7280;
-
-    border: 2px dashed #d1d5db;
-
-    border-radius: 9px;
-}
-
-.actions {
-    margin-top: 25px;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-}
-
-.hint {
-    color: #6b7280;
-    font-size: 14px;
-}
-
-@media (max-width: 800px) {
-
-    .layout {
-        grid-template-columns: 1fr;
-    }
-
-    .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1100px;">
 
-<div class="card">
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
 
-<div class="topbar">
+            <!-- Überschrift -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
-<div>
+                <div>
+                    <h2 class="h4 mb-1">
+                        Linie <?= htmlspecialchars((string) $line['number']) ?>
+                    </h2>
 
-<h2>
-Linie <?= htmlspecialchars((string) $line['number']) ?>
-</h2>
+                    <div class="text-muted small">
+                        Richtung:
+                        <strong>
+                            <?= htmlspecialchars((string) $direction['name']) ?>
+                        </strong>
 
-<div class="info">
+                        &nbsp; | &nbsp;
 
-Richtung:
-<strong>
-<?= htmlspecialchars(
-    (string) $direction['name']
-) ?>
-</strong>
+                        Ziel:
+                        <?= htmlspecialchars((string) $direction['destination']) ?>
+                    </div>
+                </div>
 
-&nbsp; | &nbsp;
+                <a
+                    class="btn btn-secondary"
+                    href="/?page=lines&action=directions&id=<?= (int) $line['id'] ?>"
+                >
+                    ← Richtungen
+                </a>
 
-Ziel:
-<?= htmlspecialchars(
-    (string) $direction['destination']
-) ?>
+            </div>
 
-</div>
+            <!-- Fehlermeldung -->
+            <?php if ($error !== null): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
 
-</div>
+            <form method="post">
 
-<a
-    class="button"
-    href="/?page=lines&action=directions&id=<?= (int) $line['id'] ?>"
->
-← Richtungen
-</a>
+                <input type="hidden" name="page" value="lines">
+                <input type="hidden" name="action" value="direction-stations-save">
 
-</div>
+                <input
+                    type="hidden"
+                    name="direction_id"
+                    value="<?= (int) $direction['id'] ?>"
+                >
 
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="<?= htmlspecialchars($csrfToken) ?>"
+                >
 
-<form method="post">
+                <div class="row g-4">
 
-<input
-    type="hidden"
-    name="page"
-    value="lines"
->
+                    <!-- =====================================================
+                         VERFÜGBARE HALTESTELLEN
+                         ===================================================== -->
+                    <div class="col-12 col-lg-6">
 
-<input
-    type="hidden"
-    name="action"
-    value="direction-stations-save"
->
+                        <div class="card h-100">
+                            <div class="card-body p-3 p-md-4">
 
-<input
-    type="hidden"
-    name="direction_id"
-    value="<?= (int) $direction['id'] ?>"
->
+                                <h3 class="h5 mb-1">Verfügbare Haltestellen</h3>
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+                                <p class="text-muted small mb-3">
+                                    Haltestellen hier greifen und rechts hineinziehen.
+                                </p>
 
+                                <div
+                                    id="available-stations"
+                                    class="station-list"
+                                >
 
-<div class="layout">
+                                    <?php
 
+                                    $assignedIds = [];
 
-<!-- =====================================================
-     VERFÜGBARE HALTESTELLEN
-     ===================================================== -->
+                                    foreach ($stations as $assignedStation) {
+                                        $assignedIds[] =
+                                            (int) $assignedStation['station_id'];
+                                    }
 
-<div class="panel">
+                                    ?>
 
-<h3>
-Verfügbare Haltestellen
-</h3>
+                                    <?php
 
-<p class="hint">
-Haltestellen hier greifen und rechts hineinziehen.
-</p>
+                                    $availableCount = 0;
 
-<div
-    id="available-stations"
-    class="station-list"
->
+                                    foreach ($allStations as $station):
 
-<?php
+                                        if (
+                                            in_array(
+                                                (int) $station['id'],
+                                                $assignedIds,
+                                                true
+                                            )
+                                        ) {
+                                            continue;
+                                        }
 
-$assignedIds = [];
+                                        $availableCount++;
 
-foreach ($stations as $assignedStation) {
-    $assignedIds[] =
-        (int) $assignedStation['station_id'];
-}
+                                    ?>
 
-?>
+                                        <div
+                                            class="station"
+                                            draggable="true"
+                                            data-station-id="<?= (int) $station['id'] ?>"
+                                        >
 
-<?php
+                                            <div class="handle">☰</div>
 
-$availableCount = 0;
+                                            <div class="station-info">
 
-foreach ($allStations as $station):
+                                                <div class="station-name">
+                                                    <?= htmlspecialchars(
+                                                        (string) $station['name']
+                                                    ) ?>
+                                                </div>
 
-    if (
-        in_array(
-            (int) $station['id'],
-            $assignedIds,
-            true
-        )
-    ) {
-        continue;
-    }
+                                                <div class="station-meta">
 
-    $availableCount++;
+                                                    <?php if ($station['short_name'] !== null): ?>
+                                                        <?= htmlspecialchars(
+                                                            (string) $station['short_name']
+                                                        ) ?>
+                                                    <?php endif; ?>
 
-?>
+                                                    <?php if ($station['station_code'] !== null): ?>
+                                                        &nbsp; · &nbsp;
+                                                        <?= htmlspecialchars(
+                                                            (string) $station['station_code']
+                                                        ) ?>
+                                                    <?php endif; ?>
 
-<div
-    class="station"
-    draggable="true"
-    data-station-id="<?= (int) $station['id'] ?>"
->
+                                                </div>
 
-<div class="handle">
-☰
-</div>
+                                            </div>
 
-<div class="station-info">
+                                        </div>
 
-<div class="station-name">
-<?= htmlspecialchars(
-    (string) $station['name']
-) ?>
-</div>
+                                    <?php endforeach; ?>
 
-<div class="station-meta">
+                                    <?php if ($availableCount === 0): ?>
+                                        <div class="drop-zone-empty">
+                                            Alle aktiven Haltestellen sind bereits zugeordnet.
+                                        </div>
+                                    <?php endif; ?>
 
-<?php if ($station['short_name'] !== null): ?>
+                                </div>
 
-<?= htmlspecialchars(
-    (string) $station['short_name']
-) ?>
+                            </div>
+                        </div>
 
-<?php endif; ?>
+                    </div>
 
-<?php if ($station['station_code'] !== null): ?>
+                    <!-- =====================================================
+                         HALTESTELLEN DER RICHTUNG
+                         ===================================================== -->
+                    <div class="col-12 col-lg-6">
 
-&nbsp; · &nbsp;
+                        <div class="card h-100">
+                            <div class="card-body p-3 p-md-4">
 
-<?= htmlspecialchars(
-    (string) $station['station_code']
-) ?>
+                                <h3 class="h5 mb-1">Haltestellen dieser Richtung</h3>
 
-<?php endif; ?>
+                                <p class="text-muted small mb-3">
+                                    Hier ziehen und in die gewünschte Reihenfolge bringen.
+                                </p>
 
-</div>
+                                <div
+                                    id="assigned-stations"
+                                    class="station-list"
+                                >
 
-</div>
+                                    <?php if (!$stations): ?>
 
-</div>
+                                        <div class="drop-zone-empty">
+                                            Noch keine Haltestellen zugeordnet.
+                                        </div>
 
-<?php endforeach; ?>
+                                    <?php else: ?>
 
+                                        <?php foreach ($stations as $station): ?>
 
-<?php if ($availableCount === 0): ?>
+                                            <div
+                                                class="station"
+                                                draggable="true"
+                                                data-station-id="<?= (int) $station['station_id'] ?>"
+                                            >
 
-<div class="empty">
-Alle aktiven Haltestellen sind bereits zugeordnet.
-</div>
+                                                <div class="handle">☰</div>
 
-<?php endif; ?>
+                                                <div class="sequence">
+                                                    <?= (int) $station['sequence'] ?>
+                                                </div>
 
-</div>
+                                                <div class="station-info">
 
-</div>
+                                                    <div class="station-name">
+                                                        <?= htmlspecialchars(
+                                                            (string) $station['name']
+                                                        ) ?>
+                                                    </div>
 
+                                                    <div class="station-meta">
 
-<!-- =====================================================
-     HALTESTELLEN DER RICHTUNG
-     ===================================================== -->
+                                                        <?php if ($station['short_name'] !== null): ?>
+                                                            <?= htmlspecialchars(
+                                                                (string) $station['short_name']
+                                                            ) ?>
+                                                        <?php endif; ?>
 
-<div class="panel">
+                                                        <?php if ($station['station_code'] !== null): ?>
+                                                            &nbsp; · &nbsp;
+                                                            <?= htmlspecialchars(
+                                                                (string) $station['station_code']
+                                                            ) ?>
+                                                        <?php endif; ?>
 
-<h3>
-Haltestellen dieser Richtung
-</h3>
+                                                    </div>
 
-<p class="hint">
-Hier ziehen und in die gewünschte Reihenfolge bringen.
-</p>
+                                                </div>
 
-<div
-    id="assigned-stations"
-    class="station-list"
->
+                                            </div>
 
-<?php if (!$stations): ?>
+                                        <?php endforeach; ?>
 
-<div class="empty">
-Noch keine Haltestellen zugeordnet.
-</div>
+                                    <?php endif; ?>
 
-<?php else: ?>
+                                </div>
 
-<?php foreach ($stations as $station): ?>
+                            </div>
+                        </div>
 
-<div
-    class="station"
-    draggable="true"
-    data-station-id="<?= (int) $station['station_id'] ?>"
->
+                    </div>
 
-<div class="handle">
-☰
-</div>
+                </div>
 
-<div class="sequence">
-<?= (int) $station['sequence'] ?>
-</div>
+                <!-- Aktionen -->
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
 
-<div class="station-info">
+                    <div class="text-muted small">
+                        ☰ Haltestelle greifen und per Drag &amp; Drop verschieben.
+                    </div>
 
-<div class="station-name">
+                    <button type="submit" class="btn btn-primary">
+                        Haltestellen speichern
+                    </button>
 
-<?= htmlspecialchars(
-    (string) $station['name']
-) ?>
+                </div>
 
-</div>
+            </form>
 
-<div class="station-meta">
+            <div class="mt-4">
+                <a href="/?page=lines" class="text-decoration-none">
+                    &larr; Zurück zu den Linien
+                </a>
+            </div>
 
-<?php if ($station['short_name'] !== null): ?>
-
-<?= htmlspecialchars(
-    (string) $station['short_name']
-) ?>
-
-<?php endif; ?>
-
-<?php if ($station['station_code'] !== null): ?>
-
-&nbsp; · &nbsp;
-
-<?= htmlspecialchars(
-    (string) $station['station_code']
-) ?>
-
-<?php endif; ?>
-
-</div>
-
-</div>
-
-</div>
-
-<?php endforeach; ?>
-
-<?php endif; ?>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="actions">
-
-<div class="hint">
-☰ Haltestelle greifen und per Drag & Drop verschieben.
-</div>
-
-<button
-    type="submit"
-    class="button"
->
-    Haltestellen speichern
-</button>
-
-</div>
-
-</form>
-
-
-<p style="margin-top: 25px;">
-
-<a href="/?page=lines">
-← Zurück zu den Linien
-</a>
-
-</p>
-
-</div>
+        </div>
+    </div>
 
 </main>
 
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
@@ -816,5 +549,4 @@ updateSequences();
 </script>
 
 </body>
-
 </html>

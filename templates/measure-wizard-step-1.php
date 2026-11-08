@@ -23,269 +23,169 @@ $wizardName =
 
 ?>
 <!DOCTYPE html>
-
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Neue Maßnahme – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Neue Maßnahme – ELA Server</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    background: #f4f6f8;
-    color: #222;
-    font-family: Arial, sans-serif;
-}
-
-main {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.08);
-}
-
-h1 {
-    margin-top: 0;
-}
-
-.subtitle {
-    color: #777;
-    margin-bottom: 30px;
-}
-
-.field {
-    margin-bottom: 22px;
-}
-
-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
-
-input,
-select {
-    width: 100%;
-    padding: 11px 12px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-    font-size: 16px;
-}
-
-.form-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 30px;
-}
-
-.button {
-    display: inline-block;
-    padding: 11px 18px;
-    border: 0;
-    border-radius: 7px;
-    background: #1677ff;
-    color: white;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.button-secondary {
-    background: #777;
-}
-
-.audio-option {
-    padding: 8px 0;
-}
-
-.audio-info {
-    margin-top: 7px;
-    color: #777;
-    font-size: 14px;
-}
-
-.empty {
-    padding: 20px;
-    background: #f7f7f7;
-    border-radius: 8px;
-    color: #777;
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<main>
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
+</header>
 
-<div class="card">
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 900px;">
 
-<h1>Neue Maßnahme</h1>
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
 
-<div class="subtitle">
-Schritt 1 von 2 – Maßnahme und Ansage festlegen
-</div>
+            <!-- Überschrift -->
+            <div class="mb-4">
+                <h2 class="h4 mb-1">Neue Maßnahme</h2>
 
-<?php if (!$audioFiles): ?>
+                <div class="text-muted small">
+                    Schritt 1 von 2 – Maßnahme und Ansage festlegen
+                </div>
+            </div>
 
-<div class="empty">
+            <?php if (!$audioFiles): ?>
 
-Es sind noch keine Ansagen vorhanden.
+                <div class="alert alert-secondary">
+                    <div class="mb-2">Es sind noch keine Ansagen vorhanden.</div>
+                    <div>Bitte zuerst eine Ansage erzeugen.</div>
+                </div>
 
-Bitte zuerst eine Ansage erzeugen.
+                <div class="d-flex justify-content-end mt-4">
+                    <a href="/?page=audio" class="btn btn-primary">
+                        Zu den Ansagen
+                    </a>
+                </div>
 
-</div>
+            <?php else: ?>
 
-<div class="form-actions">
+                <form method="post">
 
-<a
-    href="/?page=audio"
-    class="button"
->
-    Zu den Ansagen
-</a>
+                    <input
+                        type="hidden"
+                        name="page"
+                        value="measure-wizard"
+                    >
 
-</div>
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="measure-wizard-step-1"
+                    >
 
-<?php else: ?>
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="<?= htmlspecialchars($csrfToken) ?>"
+                    >
 
-<form method="post">
+                    <div class="row g-3">
 
-<input
-    type="hidden"
-    name="page"
-    value="measure-wizard"
->
+                        <div class="col-12">
+                            <label for="name" class="form-label">
+                                Name der Maßnahme <span class="text-danger">*</span>
+                            </label>
 
-<input
-    type="hidden"
-    name="action"
-    value="measure-wizard-step-1"
->
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                class="form-control"
+                                required
+                                value="<?= htmlspecialchars($wizardName) ?>"
+                                placeholder="z. B. Baustelle Hauptbahnhof"
+                            >
+                        </div>
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+                        <div class="col-12">
+                            <label for="audio_id" class="form-label">
+                                Ansage <span class="text-danger">*</span>
+                            </label>
 
-<div class="field">
+                            <select
+                                id="audio_id"
+                                name="audio_id"
+                                class="form-select"
+                                required
+                            >
 
-<label for="name">
-Name der Maßnahme
-</label>
+                                <option value="">
+                                    Bitte Ansage auswählen
+                                </option>
 
-<input
-    type="text"
-    id="name"
-    name="name"
-    required
-    value="<?= htmlspecialchars($wizardName) ?>"
-    placeholder="z. B. Baustelle Hauptbahnhof"
->
+                                <?php foreach ($audioFiles as $audio): ?>
 
-</div>
+                                    <?php
+                                    $audioId =
+                                        (int) $audio['id'];
 
+                                    $selected =
+                                        $audioId === $selectedAudioId;
+                                    ?>
 
-<div class="field">
+                                    <option
+                                        value="<?= $audioId ?>"
+                                        <?= $selected ? 'selected' : '' ?>
+                                    >
+                                        <?= htmlspecialchars(
+                                            (string) $audio['text']
+                                        ) ?>
+                                        –
+                                        <?= htmlspecialchars(
+                                            ucfirst(
+                                                (string) $audio['voice']
+                                            )
+                                        ) ?>
+                                    </option>
 
-<label for="audio_id">
-Ansage
-</label>
+                                <?php endforeach; ?>
 
-<select
-    id="audio_id"
-    name="audio_id"
-    required
->
+                            </select>
 
-<option value="">
-Bitte Ansage auswählen
-</option>
+                            <div class="form-text">
+                                Eine Maßnahme kann genau einer Ansage zugeordnet werden.
+                            </div>
+                        </div>
 
-<?php foreach ($audioFiles as $audio): ?>
+                    </div>
 
-<?php
-$audioId =
-    (int) $audio['id'];
+                    <!-- Aktionen -->
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-4">
 
-$selected =
-    $audioId === $selectedAudioId;
-?>
+                        <a
+                            href="/?page=measures"
+                            class="btn btn-secondary"
+                        >
+                            Abbrechen
+                        </a>
 
-<option
-    value="<?= $audioId ?>"
-    <?= $selected ? 'selected' : '' ?>
->
-    <?= htmlspecialchars(
-        (string) $audio['text']
-    ) ?>
-    –
-    <?= htmlspecialchars(
-        ucfirst(
-            (string) $audio['voice']
-        )
-    ) ?>
-</option>
+                        <button type="submit" class="btn btn-primary">
+                            Weiter →
+                        </button>
 
-<?php endforeach; ?>
+                    </div>
 
-</select>
+                </form>
 
-<div class="audio-info">
-Eine Maßnahme kann genau einer Ansage zugeordnet werden.
-</div>
+            <?php endif; ?>
 
-</div>
-
-
-<div class="form-actions">
-
-<a
-    href="/?page=measures"
-    class="button button-secondary"
->
-    Abbrechen
-</a>
-
-<button
-    type="submit"
-    class="button"
->
-    Weiter →
-</button>
-
-</div>
-
-</form>
-
-<?php endif; ?>
-
-</div>
+        </div>
+    </div>
 
 </main>
 
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+
 </body>
-
 </html>
-

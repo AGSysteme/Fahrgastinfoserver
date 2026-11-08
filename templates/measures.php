@@ -1,492 +1,279 @@
+<?php
+/**
+ * @var array $measures
+ * @var string $csrfToken
+ */
+?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Maßnahmen – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Maßnahmen – ELA Server</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-header h1 {
-    margin: 0;
-}
-
-main {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 14px;
-    padding: 28px;
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, .08);
-
-    margin-bottom: 24px;
-}
-
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-
-    margin-bottom: 25px;
-}
-
-.topbar h2 {
-    margin: 0;
-}
-
-.subtitle {
-    color: #6b7280;
-    margin-top: 5px;
-}
-
-.button {
-    display: inline-block;
-
-    border: 0;
-
-    padding: 11px 17px;
-
-    border-radius: 9px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.button:hover {
-    background: #1d4ed8;
-}
-
-.measure-list {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
-}
-
-.measure-item {
-    border: 1px solid #e5e7eb;
-
-    border-radius: 11px;
-
-    padding: 18px;
-
-    background: #f9fafb;
-
-    display: grid;
-
-    grid-template-columns: 1fr auto;
-
-    gap: 20px;
-
-    align-items: center;
-}
-
-.measure-name {
-    font-size: 18px;
-
-    font-weight: 700;
-}
-
-.measure-audio {
-    margin-top: 7px;
-
-    font-weight: 600;
-}
-
-.measure-meta {
-    color: #6b7280;
-
-    font-size: 14px;
-
-    margin-top: 8px;
-
-    line-height: 1.6;
-}
-
-.status {
-    display: inline-block;
-
-    font-weight: 700;
-
-    margin-bottom: 7px;
-}
-
-.status-active {
-    color: #15803d;
-}
-
-.status-future {
-    color: #ca8a04;
-}
-
-.status-expired {
-    color: #111827;
-}
-
-.measure-actions {
-    display: flex;
-
-    gap: 10px;
-
-    flex-wrap: wrap;
-}
-
-.button-edit {
-    background: #2563eb;
-}
-
-.button-delete {
-    background: #dc2626;
-}
-
-.empty {
-    padding: 35px;
-
-    text-align: center;
-
-    color: #6b7280;
-
-    border: 2px dashed #d1d5db;
-
-    border-radius: 10px;
-}
-
-.back {
-    margin-top: 20px;
-}
-
-.back a {
-    color: #2563eb;
-
-    text-decoration: none;
-
-    font-weight: 600;
-}
-
-@media (max-width: 800px) {
-
-    .measure-item {
-        grid-template-columns: 1fr;
-    }
-
-    .topbar {
-        align-items: flex-start;
-
-        flex-direction: column;
-    }
-
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1200px;">
 
-<div class="card">
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
 
-<div class="topbar">
+            <!-- Überschrift -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
-<div>
+                <div>
+                    <h2 class="h4 mb-1">Maßnahmen</h2>
 
-<h2>Maßnahmen</h2>
+                    <div class="text-muted small">
+                        <?= count($measures) ?>
+                        Maßnahme<?= count($measures) === 1 ? '' : 'n' ?>
+                    </div>
+                </div>
 
-<div class="subtitle">
-<?= count($measures) ?>
-&nbsp;Maßnahme<?= count($measures) === 1 ? '' : 'n' ?>
-</div>
+                <a
+                    href="/?page=measure-wizard&step=1&new=1"
+                    class="btn btn-primary"
+                >
+                    + Neue Maßnahme
+                </a>
 
-</div>
+            </div>
 
-<a
-    href="/?page=measure-wizard&step=1&new=1"
-    class="button"
->
-    + Neue Maßnahme
-</a>
+            <!-- Liste -->
+            <?php if (!$measures): ?>
 
-</div>
+                <div class="text-center text-muted py-5 border border-2 border-dashed rounded-3">
+                    Noch keine Maßnahmen vorhanden.
+                </div>
 
+            <?php else: ?>
 
-<?php if (!$measures): ?>
+                <div class="d-flex flex-column gap-3">
 
-<div class="empty">
+                    <?php foreach ($measures as $measure): ?>
 
-Noch keine Maßnahmen vorhanden.
+                        <?php
 
-</div>
+                        $now = time();
 
-<?php else: ?>
+                        $startTimestamp =
+                            strtotime(
+                                (string) $measure['start_at']
+                            );
 
-<div class="measure-list">
+                        $endTimestamp = null;
 
-<?php foreach ($measures as $measure): ?>
+                        if (
+                            !empty($measure['end_at'])
+                        ) {
+                            $endTimestamp =
+                                strtotime(
+                                    (string) $measure['end_at']
+                                );
+                        }
 
-<?php
+                        if (
+                            (int) $measure['active'] !== 1
+                        ) {
 
-$now = time();
+                            $statusText = 'Deaktiviert';
+                            $statusClass = 'text-secondary';
 
-$startTimestamp =
-    strtotime(
-        (string) $measure['start_at']
-    );
+                        } elseif (
+                            $startTimestamp !== false &&
+                            $startTimestamp > $now
+                        ) {
 
-$endTimestamp = null;
+                            $statusText = 'Geplant';
+                            $statusClass = 'text-warning';
 
-if (
-    !empty($measure['end_at'])
-) {
-    $endTimestamp =
-        strtotime(
-            (string) $measure['end_at']
-        );
-}
+                        } elseif (
+                            (
+                                (string) $measure['repeat_type'] === 'once' &&
+                                $startTimestamp !== false &&
+                                $startTimestamp + 5 < $now
+                            ) ||
+                            (
+                                (string) $measure['repeat_type'] !== 'once' &&
+                                $endTimestamp !== null &&
+                                $endTimestamp !== false &&
+                                $endTimestamp < $now
+                            )
+                        ) {
 
-if (
-    (int) $measure['active'] !== 1
-) {
+                            $statusText = 'Abgelaufen';
+                            $statusClass = 'text-secondary';
 
-    $statusText = 'Deaktiviert';
-    $statusClass = 'status-expired';
+                        } else {
 
-} elseif (
-    $startTimestamp !== false &&
-    $startTimestamp > $now
-) {
+                            $statusText = 'Aktiv';
+                            $statusClass = 'text-success';
 
-    $statusText = 'Geplant';
-    $statusClass = 'status-future';
+                        }
 
-} elseif (
-    (
-        (string) $measure['repeat_type'] === 'once' &&
-        $startTimestamp !== false &&
-        $startTimestamp + 5 < $now
-    ) ||
-    (
-        (string) $measure['repeat_type'] !== 'once' &&
-        $endTimestamp !== null &&
-        $endTimestamp !== false &&
-        $endTimestamp < $now
-    )
-) {
+                        ?>
 
-    $statusText = 'Abgelaufen';
-    $statusClass = 'status-expired';
+                        <div class="card">
+                            <div class="card-body p-3 p-md-4">
 
-} else {
+                                <div class="row g-3 align-items-center">
 
-    $statusText = 'Aktiv';
-    $statusClass = 'status-active';
+                                    <div class="col-12 col-md">
 
-}
+                                        <div class="fw-bold small mb-1 <?= $statusClass ?>">
+                                            <?= htmlspecialchars($statusText) ?>
+                                        </div>
 
-?>
+                                        <div class="fs-5 fw-bold text-break">
+                                            <?= htmlspecialchars(
+                                                (string) $measure['name']
+                                            ) ?>
+                                        </div>
 
-<div class="measure-item">
+                                        <div class="fw-semibold mt-2 text-break">
+                                            🔊
+                                            <?= htmlspecialchars(
+                                                (string) $measure['audio_text']
+                                            ) ?>
+                                        </div>
 
-<div>
+                                        <div class="text-muted small mt-2 lh-lg">
 
-<div class="status <?= $statusClass ?>">
+                                            Start:
+                                            <strong>
+                                                <?= htmlspecialchars(
+                                                    (string) $measure['start_at']
+                                                ) ?>
+                                            </strong>
 
-<?= htmlspecialchars($statusText) ?>
+                                            <?php if (!empty($measure['end_at'])): ?>
 
-</div>
+                                                &nbsp; · &nbsp;
 
-<div class="measure-name">
+                                                Ende:
+                                                <strong>
+                                                    <?= htmlspecialchars(
+                                                        (string) $measure['end_at']
+                                                    ) ?>
+                                                </strong>
 
-<?= htmlspecialchars(
-    (string) $measure['name']
-) ?>
+                                            <?php endif; ?>
 
-</div>
+                                            <br>
 
-<div class="measure-audio">
+                                            Stimme:
+                                            <?= htmlspecialchars(
+                                                ucfirst(
+                                                    (string) $measure['audio_voice']
+                                                )
+                                            ) ?>
 
-🔊
-<?= htmlspecialchars(
-    (string) $measure['audio_text']
-) ?>
+                                            &nbsp; · &nbsp;
 
-</div>
+                                            Wiederholung:
+                                            <?= htmlspecialchars(
+                                                (string) $measure['repeat_type']
+                                            ) ?>
 
-<div class="measure-meta">
+                                            <?php if (
+                                                (int) $measure['repeat_interval'] > 1
+                                            ): ?>
 
-Start:
-<strong>
-<?= htmlspecialchars(
-    (string) $measure['start_at']
-) ?>
-</strong>
+                                                &nbsp; · &nbsp;
 
-<?php if (!empty($measure['end_at'])): ?>
+                                                Intervall:
+                                                <?= (int) $measure['repeat_interval'] ?>
 
-&nbsp; · &nbsp;
+                                            <?php endif; ?>
 
-Ende:
-<strong>
-<?= htmlspecialchars(
-    (string) $measure['end_at']
-) ?>
-</strong>
+                                        </div>
 
-<?php endif; ?>
+                                    </div>
 
-<br>
+                                    <div class="col-12 col-md-auto">
 
-Stimme:
-<?= htmlspecialchars(
-    ucfirst(
-        (string) $measure['audio_voice']
-    )
-) ?>
+                                        <div class="d-flex flex-wrap gap-2">
 
-&nbsp; · &nbsp;
+                                            <a
+                                                href="/?page=measure-edit&id=<?= (int) $measure['id'] ?>"
+                                                class="btn btn-sm btn-primary"
+                                            >
+                                                Bearbeiten
+                                            </a>
 
-Wiederholung:
-<?= htmlspecialchars(
-    (string) $measure['repeat_type']
-) ?>
+                                            <form
+                                                method="post"
+                                                onsubmit="return confirm('Diese Maßnahme wirklich löschen?');"
+                                            >
 
-<?php if (
-    (int) $measure['repeat_interval'] > 1
-): ?>
+                                                <input
+                                                    type="hidden"
+                                                    name="page"
+                                                    value="measures"
+                                                >
 
-&nbsp; · &nbsp;
+                                                <input
+                                                    type="hidden"
+                                                    name="action"
+                                                    value="measure-delete"
+                                                >
 
-Intervall:
-<?= (int) $measure['repeat_interval'] ?>
+                                                <input
+                                                    type="hidden"
+                                                    name="id"
+                                                    value="<?= (int) $measure['id'] ?>"
+                                                >
 
-<?php endif; ?>
+                                                <input
+                                                    type="hidden"
+                                                    name="csrf_token"
+                                                    value="<?= htmlspecialchars($csrfToken) ?>"
+                                                >
 
-</div>
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    Löschen
+                                                </button>
 
-</div>
+                                            </form>
 
-<div class="measure-actions">
+                                        </div>
 
-<a
-    href="/?page=measure-edit&id=<?= (int) $measure['id'] ?>"
-    class="button button-edit"
->
-    Bearbeiten
-</a>
+                                    </div>
 
-<form
-    method="post"
-    onsubmit="return confirm('Diese Maßnahme wirklich löschen?');"
->
+                                </div>
 
-<input
-    type="hidden"
-    name="page"
-    value="measures"
->
+                            </div>
+                        </div>
 
-<input
-    type="hidden"
-    name="action"
-    value="measure-delete"
->
+                    <?php endforeach; ?>
 
-<input
-    type="hidden"
-    name="id"
-    value="<?= (int) $measure['id'] ?>"
->
+                </div>
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+            <?php endif; ?>
 
-<button
-    type="submit"
-    class="button button-delete"
->
-    Löschen
-</button>
+            <!-- Zurück -->
+            <div class="mt-4">
+                <a href="/" class="text-decoration-none">
+                    &larr; Zurück zum Dashboard
+                </a>
+            </div>
 
-</form>
-
-</div>
-
-</div>
-
-<?php endforeach; ?>
-
-</div>
-
-<?php endif; ?>
-
-</div>
-
-
-<div class="back">
-
-<a href="/">
-← Zurück zum Dashboard
-</a>
-
-</div>
+        </div>
+    </div>
 
 </main>
 
-</body>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>

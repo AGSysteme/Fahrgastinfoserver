@@ -1,671 +1,331 @@
+<?php
+/**
+ * @var array $audioFiles
+ * @var string|null $error
+ * @var string $csrfToken
+ */
+?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Ansagen – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Ansagen – ELA Server</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-header h1 {
-    margin: 0;
-}
-
-main {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 14px;
-    padding: 28px;
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, .08);
-
-    margin-bottom: 24px;
-}
-
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-
-    margin-bottom: 25px;
-}
-
-.topbar h2 {
-    margin: 0;
-}
-
-.subtitle {
-    color: #6b7280;
-    margin-top: 5px;
-}
-
-.button {
-    display: inline-block;
-
-    border: 0;
-
-    padding: 11px 17px;
-
-    border-radius: 9px;
-
-    background: #2563eb;
-    color: white;
-
-    text-decoration: none;
-
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-.button:hover {
-    background: #1d4ed8;
-}
-
-.button-danger {
-    background: #dc2626;
-}
-
-.button-danger:hover {
-    background: #b91c1c;
-}
-
-.form-grid {
-    display: grid;
-
-    grid-template-columns:
-        1fr 260px;
-
-    gap: 22px;
-}
-
-.field label {
-    display: block;
-
-    font-weight: 600;
-
-    margin-bottom: 8px;
-}
-
-textarea,
-select {
-    width: 100%;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 9px;
-
-    padding: 12px;
-
-    font: inherit;
-
-    background: white;
-}
-
-textarea {
-    min-height: 150px;
-
-    resize: vertical;
-}
-
-textarea:focus,
-select:focus {
-    outline: none;
-
-    border-color: #2563eb;
-
-    box-shadow:
-        0 0 0 3px rgba(37, 99, 235, .12);
-}
-
-.voice-info {
-    margin-top: 10px;
-
-    color: #6b7280;
-
-    font-size: 14px;
-}
-
-.form-actions {
-    margin-top: 22px;
-
-    display: flex;
-
-    justify-content: flex-end;
-}
-
-.error {
-    background: #fee2e2;
-    color: #991b1b;
-
-    border: 1px solid #fecaca;
-
-    padding: 13px 16px;
-
-    border-radius: 9px;
-
-    margin-bottom: 20px;
-}
-
-.audio-list {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
-}
-
-.audio-item {
-    border: 1px solid #e5e7eb;
-
-    border-radius: 11px;
-
-    padding: 17px;
-
-    background: #f9fafb;
-
-    display: grid;
-
-    grid-template-columns: 1fr auto;
-
-    gap: 20px;
-
-    align-items: center;
-}
-
-.audio-text {
-    font-weight: 600;
-
-    line-height: 1.5;
-}
-
-.audio-meta {
-    color: #6b7280;
-
-    font-size: 13px;
-
-    margin-top: 7px;
-}
-
-.audio-actions {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    flex-wrap: wrap;
-}
-
-audio {
-    width: 260px;
-    max-width: 100%;
-}
-
-.delete-form {
-    margin: 0;
-}
-
-.empty {
-    padding: 35px;
-
-    text-align: center;
-
-    color: #6b7280;
-
-    border: 2px dashed #d1d5db;
-
-    border-radius: 10px;
-}
-
-.back {
-    margin-top: 20px;
-}
-
-.back a {
-    color: #2563eb;
-
-    text-decoration: none;
-
-    font-weight: 600;
-}
-
-@media (max-width: 800px) {
-
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .audio-item {
-        grid-template-columns: 1fr;
-    }
-
-    .topbar {
-        align-items: flex-start;
-
-        flex-direction: column;
-    }
-
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1200px;">
 
+    <!-- =====================================================
+         NEUE ANSAGE
+         ===================================================== -->
 
-<!-- =====================================================
-     NEUE ANSAGE
-     ===================================================== -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-3 p-md-4">
 
-<div class="card">
+            <div class="mb-4">
+                <h2 class="h4 mb-1">Neue Ansage</h2>
 
-<div class="topbar">
+                <div class="text-muted small">
+                    Text eingeben und mit Piper eine WAV-Ansage erzeugen.
+                </div>
+            </div>
 
-<div>
+            <!-- Fehlermeldung -->
+            <?php if ($error !== null): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
 
-<h2>Neue Ansage</h2>
+            <form method="post">
 
-<div class="subtitle">
-Text eingeben und mit Piper eine WAV-Ansage erzeugen.
-</div>
+                <input type="hidden" name="page" value="audio">
+                <input type="hidden" name="action" value="generate">
 
-</div>
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="<?= htmlspecialchars($csrfToken) ?>"
+                >
 
-</div>
+                <div class="row g-3">
 
+                    <div class="col-12 col-md">
+                        <label for="text" class="form-label">
+                            Ansagetext
+                        </label>
 
-<?php if ($error !== null): ?>
+                        <textarea
+                            id="text"
+                            name="text"
+                            class="form-control"
+                            rows="6"
+                            required
+                            placeholder="z. B. Nächster Halt: Hauptbahnhof. Bitte in Fahrtrichtung rechts aussteigen."
+                        ></textarea>
+                    </div>
 
-<div class="error">
+                    <div class="col-12 col-md-4 col-xl-3">
+                        <label for="voice" class="form-label">
+                            Stimme
+                        </label>
 
-<?= htmlspecialchars($error) ?>
+                        <select
+                            id="voice"
+                            name="voice"
+                            class="form-select"
+                        >
+                            <option value="kerstin">Kerstin</option>
+                            <option value="thorsten">Thorsten</option>
+                        </select>
 
-</div>
+                        <div class="form-text">
+                            Kerstin: 16 kHz, kompakt<br>
+                            Thorsten: 22,05 kHz, höhere Qualität
+                        </div>
+                    </div>
 
-<?php endif; ?>
+                </div>
 
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        🔊 Ansage erzeugen
+                    </button>
+                </div>
 
-<form method="post">
+                <hr class="my-4">
 
-<input
-    type="hidden"
-    name="page"
-    value="audio"
->
+                <!-- Aufnahme über das Mikrofon -->
+                <div class="row g-3 align-items-end">
 
-<input
-    type="hidden"
-    name="action"
-    value="generate"
->
+                    <div class="col-12 col-md">
+                        <label for="recording_title" class="form-label">
+                            Aufnahmename
+                        </label>
 
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
+                        <input
+                            type="text"
+                            id="recording_title"
+                            class="form-control"
+                            placeholder="z.B. Ablöse Kö A1"
+                        >
+                    </div>
 
+                    <div class="col-12 col-md-auto text-center">
 
-<div class="form-grid">
+                        <button
+                            type="button"
+                            id="recordButton"
+                            class="btn btn-danger w-100"
+                        >
+                            🎤 Gedrückt halten zum Aufnehmen
+                        </button>
 
+                        <div id="recordStatus" class="text-muted small mt-2">
+                            Bereit
+                        </div>
 
-<div class="field">
+                    </div>
 
-<label for="text">
-Ansagetext
-</label>
+                </div>
 
-<textarea
-    id="text"
-    name="text"
-    required
-    placeholder="z. B. Nächster Halt: Hauptbahnhof. Bitte in Fahrtrichtung rechts aussteigen."
-></textarea>
+            </form>
 
-</div>
-
-
-<div class="field">
-
-<label for="voice">
-Stimme
-</label>
-
-<select
-    id="voice"
-    name="voice"
->
-
-<option value="kerstin">
-Kerstin
-</option>
-
-<option value="thorsten">
-Thorsten
-</option>
-
-</select>
-
-<div class="voice-info">
-Kerstin: 16 kHz, kompakt<br>
-Thorsten: 22,05 kHz, höhere Qualität
-</div>
-
-</div>
-
-
-</div>
-
-
-<div class="form-actions">
-
-<button
-    type="submit"
-    class="button"
->
-    🔊 Ansage erzeugen
-</button>
-
-</div>
-<br><br>
-<div
-    class="audio-item" >
-<div
-    style="
-        margin-top:20px;
-        margin-bottom:20px;
-    "
->
-    <label
-        for="recording_title"
-        style="
-            display:block;
-            font-weight:600;
-            margin-bottom:8px;
-        "
-    >
-        Aufnahmename
-    </label>
-
-    <input
-        type="text"
-        id="recording_title"
-        placeholder="z.B. Ablöse Kö A1"
-        style="
-            width:100%;
-            padding:12px;
-            border:1px solid #d1d5db;
-            border-radius:9px;
-            font:inherit;
-        "
-    >
-</div>
-
-
-<div
-    style="
-        margin-top:20px;
-        text-align:center;
-    "
->
-    <button
-        type="button"
-        id="recordButton"
-        class="button button-danger"
-    >
-        🎤 Gedrückt halten zum Aufnehmen
-    </button>
-
-    <div
-        id="recordStatus"
-        style="
-            margin-top:10px;
-            color:#6b7280;
-        "
-    >
-        Bereit
+        </div>
     </div>
-</div>
-</div>
 
-</form>
+    <!-- =====================================================
+         VORHANDENE ANSAGEN
+         ===================================================== -->
 
-</div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-3 p-md-4">
 
+            <div class="mb-4">
+                <h2 class="h4 mb-1">Vorhandene Ansagen</h2>
 
-<!-- =====================================================
-     VORHANDENE ANSAGEN
-     ===================================================== -->
+                <div class="text-muted small">
+                    <?= count($audioFiles) ?>
+                    gespeicherte Ansage<?= count($audioFiles) === 1 ? '' : 'n' ?>
+                </div>
+            </div>
 
-<div class="card">
+            <?php if (!$audioFiles): ?>
 
-<div class="topbar">
+                <div class="text-center text-muted py-5 border border-2 border-dashed rounded-3">
+                    Noch keine Ansagen vorhanden.
+                </div>
 
-<div>
+            <?php else: ?>
 
-<h2>Vorhandene Ansagen</h2>
+                <div class="d-flex flex-column gap-3">
 
-<div class="subtitle">
-<?= count($audioFiles) ?>
-&nbsp;gespeicherte Ansage<?= count($audioFiles) === 1 ? '' : 'n' ?>
-</div>
+                    <?php foreach ($audioFiles as $audio): ?>
 
-</div>
+                        <?php
 
-</div>
+                        $filename =
+                            basename(
+                                (string) $audio['filename']
+                            );
 
+                        $audioUrl =
+                            '/audio/announcements/' .
+                            rawurlencode($filename);
 
-<?php if (!$audioFiles): ?>
+                        ?>
 
-<div class="empty">
+                        <div class="card">
+                            <div class="card-body p-3 p-md-4">
 
-Noch keine Ansagen vorhanden.
+                                <div class="row g-3 align-items-center">
 
-</div>
+                                    <div class="col-12 col-lg">
 
-<?php else: ?>
+                                        <div class="fw-semibold lh-base text-break">
+                                            <?= nl2br(
+                                                htmlspecialchars(
+                                                    (string) $audio['text']
+                                                )
+                                            ) ?>
+                                        </div>
 
-<div class="audio-list">
+                                        <div class="text-muted small mt-2">
 
-<?php foreach ($audioFiles as $audio): ?>
+                                            Stimme:
+                                            <strong>
+                                                <?= htmlspecialchars(
+                                                    ucfirst(
+                                                        (string) $audio['voice']
+                                                    )
+                                                ) ?>
+                                            </strong>
 
-<?php
+                                            &nbsp; · &nbsp;
 
-$filename =
-    basename(
-        (string) $audio['filename']
-    );
+                                            <?= number_format(
+                                                (float) $audio['duration'],
+                                                1,
+                                                ',',
+                                                '.'
+                                            ) ?>
+                                            Sekunden
 
-$audioUrl =
-    '/audio/announcements/' .
-    rawurlencode($filename);
+                                            &nbsp; · &nbsp;
 
-?>
+                                            <?= number_format(
+                                                ((int) $audio['file_size']) / 1024,
+                                                0,
+                                                ',',
+                                                '.'
+                                            ) ?>
+                                            KB
 
-<div class="audio-item">
+                                        </div>
 
+                                    </div>
 
-<div>
+                                    <div class="col-12 col-lg-auto">
 
-<div class="audio-text">
+                                        <div class="d-flex flex-wrap align-items-center gap-2">
 
-<?= nl2br(
-    htmlspecialchars(
-        (string) $audio['text']
-    )
-) ?>
+                                            <audio
+                                                controls
+                                                preload="none"
+                                                class="w-100"
+                                                style="max-width: 260px;"
+                                            >
 
-</div>
+                                                <source
+                                                    src="<?= htmlspecialchars($audioUrl) ?>"
+                                                    type="audio/wav"
+                                                >
 
-<div class="audio-meta">
+                                                Dein Browser unterstützt keine Audio-Wiedergabe.
 
-Stimme:
-<strong>
-<?= htmlspecialchars(
-    ucfirst(
-        (string) $audio['voice']
-    )
-) ?>
-</strong>
+                                            </audio>
 
-&nbsp; · &nbsp;
+                                            <a
+                                                href="/?page=measure-wizard&step=1&audio_id=<?= (int) $audio['id'] ?>"
+                                                class="btn btn-sm btn-primary"
+                                            >
+                                                Maßnahme erstellen
+                                            </a>
 
-<?= number_format(
-    (float) $audio['duration'],
-    1,
-    ',',
-    '.'
-) ?>
-Sekunden
+                                            <form
+                                                method="post"
+                                                class="m-0"
+                                                onsubmit="return confirm('Diese Ansage wirklich löschen?');"
+                                            >
 
-&nbsp; · &nbsp;
+                                                <input
+                                                    type="hidden"
+                                                    name="page"
+                                                    value="audio"
+                                                >
 
-<?= number_format(
-    ((int) $audio['file_size']) / 1024,
-    0,
-    ',',
-    '.'
-) ?>
-KB
+                                                <input
+                                                    type="hidden"
+                                                    name="action"
+                                                    value="delete"
+                                                >
 
-</div>
+                                                <input
+                                                    type="hidden"
+                                                    name="id"
+                                                    value="<?= (int) $audio['id'] ?>"
+                                                >
 
-</div>
+                                                <input
+                                                    type="hidden"
+                                                    name="csrf_token"
+                                                    value="<?= htmlspecialchars($csrfToken) ?>"
+                                                >
 
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    Löschen
+                                                </button>
 
-<div class="audio-actions">
+                                            </form>
 
-<audio
-    controls
-    preload="none"
->
+                                        </div>
 
-<source
-    src="<?= htmlspecialchars($audioUrl) ?>"
-    type="audio/wav"
->
+                                    </div>
 
-Dein Browser unterstützt keine Audio-Wiedergabe.
+                                </div>
 
-</audio>
+                            </div>
+                        </div>
 
-<a
-    href="/?page=measure-wizard&step=1&audio_id=<?= (int) $audio['id'] ?>"
-    class="button"
->
-    Maßnahme erstellen
-</a>
+                    <?php endforeach; ?>
 
-<form
-    method="post"
-    class="delete-form"
-    onsubmit="return confirm('Diese Ansage wirklich löschen?');"
->
+                </div>
 
-<input
-    type="hidden"
-    name="page"
-    value="audio"
->
+            <?php endif; ?>
 
-<input
-    type="hidden"
-    name="action"
-    value="delete"
->
+        </div>
+    </div>
 
-<input
-    type="hidden"
-    name="id"
-    value="<?= (int) $audio['id'] ?>"
->
-
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
-
-<button
-    type="submit"
-    class="button button-danger"
->
-    Löschen
-</button>
-
-</form>
-
-</div>
-
-</div>
-
-<?php endforeach; ?>
-
-</div>
-
-<?php endif; ?>
-
-</div>
-
-
-<div class="back">
-
-<a href="/">
-← Zurück zum Dashboard
-</a>
-
-</div>
+    <div class="mt-4">
+        <a href="/" class="text-decoration-none">
+            &larr; Zurück zum Dashboard
+        </a>
+    </div>
 
 </main>
+
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
@@ -858,9 +518,4 @@ console.log(
 </script>
 
 </body>
-
-</html> 
-
-</body>
-
 </html>

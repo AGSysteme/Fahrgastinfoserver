@@ -1,512 +1,239 @@
+<?php
+/**
+ * @var array|null $station
+ * @var string|null $error
+ * @var string $csrfToken
+ */
+?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title><?= $station ? 'Haltestelle bearbeiten' : 'Neue Haltestelle' ?> – ELA Server</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>
-<?= $station
-    ? 'Haltestelle bearbeiten'
-    : 'Neue Haltestelle'
-?>
- – ELA Server
-</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-
-    font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    background: #f3f4f6;
-    color: #111827;
-}
-
-header {
-    background: #111827;
-    color: white;
-    padding: 20px 30px;
-}
-
-header h1 {
-    margin: 0;
-}
-
-main {
-    max-width: 850px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-.card {
-    background: white;
-
-    border-radius: 12px;
-
-    padding: 28px;
-
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, .08);
-}
-
-.topbar {
-    margin-bottom: 25px;
-}
-
-.topbar h2 {
-    margin: 0 0 6px 0;
-}
-
-.subtitle {
-    color: #6b7280;
-}
-
-.error {
-    background: #fee2e2;
-
-    color: #991b1b;
-
-    padding: 14px 16px;
-
-    margin-bottom: 22px;
-
-    border-radius: 9px;
-
-    border: 1px solid #fecaca;
-}
-
-.form-grid {
-    display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap: 20px;
-}
-
-.form-group {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 7px;
-}
-
-.form-group.full {
-    grid-column: 1 / -1;
-}
-
-label {
-    font-weight: 600;
-
-    color: #374151;
-}
-
-input[type="text"],
-input[type="number"] {
-    width: 100%;
-
-    padding: 11px 13px;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 8px;
-
-    font-size: 15px;
-
-    background: white;
-}
-
-input:focus {
-    outline: none;
-
-    border-color: #2563eb;
-
-    box-shadow:
-        0 0 0 3px rgba(37, 99, 235, .12);
-}
-
-.help {
-    color: #6b7280;
-
-    font-size: 13px;
-}
-
-.checkbox {
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-
-    padding: 14px;
-
-    background: #f9fafb;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 8px;
-}
-
-.checkbox input {
-    width: 18px;
-    height: 18px;
-}
-
-.actions {
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 15px;
-
-    margin-top: 28px;
-
-    padding-top: 22px;
-
-    border-top: 1px solid #e5e7eb;
-}
-
-.button {
-    display: inline-block;
-
-    padding: 10px 18px;
-
-    border: 0;
-
-    border-radius: 8px;
-
-    background: #2563eb;
-
-    color: white;
-
-    text-decoration: none;
-
-    font-weight: 600;
-
-    cursor: pointer;
-
-    font-size: 15px;
-}
-
-.button:hover {
-    background: #1d4ed8;
-}
-
-.button-secondary {
-    background: #e5e7eb;
-
-    color: #374151;
-}
-
-.button-secondary:hover {
-    background: #d1d5db;
-}
-
-@media (max-width: 700px) {
-
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .form-group.full {
-        grid-column: auto;
-    }
-
-    .actions {
-        align-items: stretch;
-
-        flex-direction: column-reverse;
-    }
-
-    .actions .button {
-        text-align: center;
-    }
-
-}
-
-</style>
-
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
 
 <body>
 
-<header>
-
-<h1>ELA Server</h1>
-
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
 </header>
 
-<main>
-
-<div class="card">
-
-<div class="topbar">
-
-<h2>
-
-<?= $station
-    ? 'Haltestelle bearbeiten'
-    : 'Neue Haltestelle'
-?>
-
-</h2>
-
-<div class="subtitle">
-
-<?php if ($station): ?>
-
-Haltestellendaten bearbeiten
-
-<?php else: ?>
-
-Neue Haltestelle im System anlegen
-
-<?php endif; ?>
-
-</div>
-
-</div>
-
-
-<?php if ($error !== null): ?>
-
-<div class="error">
-
-<?= htmlspecialchars(
-    (string) $error
-) ?>
-
-</div>
-
-<?php endif; ?>
-
-
-<form method="post">
-
-<input
-    type="hidden"
-    name="page"
-    value="stations"
->
-
-<input
-    type="hidden"
-    name="csrf_token"
-    value="<?= htmlspecialchars($csrfToken) ?>"
->
-
-<input
-    type="hidden"
-    name="action"
-    value="<?= $station ? 'update' : 'create' ?>"
->
-
-<?php if ($station): ?>
-
-<input
-    type="hidden"
-    name="id"
-    value="<?= (int) $station['id'] ?>"
->
-
-<?php endif; ?>
-
-
-<div class="form-grid">
-
-
-<div class="form-group full">
-
-<label for="name">
-Name
-</label>
-
-<input
-    id="name"
-    type="text"
-    name="name"
-    required
-    maxlength="200"
-    value="<?= htmlspecialchars(
-        (string) ($station['name'] ?? '')
-    ) ?>"
-    placeholder="z. B. Hauptbahnhof"
->
-
-</div>
-
-
-<div class="form-group">
-
-<label for="short_name">
-Kurzname
-</label>
-
-<input
-    id="short_name"
-    type="text"
-    name="short_name"
-    maxlength="100"
-    value="<?= htmlspecialchars(
-        (string) ($station['short_name'] ?? '')
-    ) ?>"
-    placeholder="z. B. Hbf"
->
-
-<div class="help">
-Kurze Bezeichnung für Anzeigen.
-</div>
-
-</div>
-
-
-<div class="form-group">
-
-<label for="station_code">
-Haltestellencode
-</label>
-
-<input
-    id="station_code"
-    type="text"
-    name="station_code"
-    maxlength="50"
-    value="<?= htmlspecialchars(
-        (string) ($station['station_code'] ?? '')
-    ) ?>"
-    placeholder="z. B. HST001"
->
-
-<div class="help">
-Eindeutiger interner Haltestellencode.
-</div>
-
-</div>
-
-
-<div class="form-group">
-
-<label for="latitude">
-Breitengrad
-</label>
-
-<input
-    id="latitude"
-    type="number"
-    name="latitude"
-    step="any"
-    value="<?= htmlspecialchars(
-        (string) ($station['latitude'] ?? '')
-    ) ?>"
-    placeholder="z. B. 48.3659"
->
-
-<div class="help">
-Geografische Position der Haltestelle.
-</div>
-
-</div>
-
-
-<div class="form-group">
-
-<label for="longitude">
-Längengrad
-</label>
-
-<input
-    id="longitude"
-    type="number"
-    name="longitude"
-    step="any"
-    value="<?= htmlspecialchars(
-        (string) ($station['longitude'] ?? '')
-    ) ?>"
-    placeholder="z. B. 10.8985"
->
-
-<div class="help">
-Geografische Position der Haltestelle.
-</div>
-
-</div>
-
-
-<?php if ($station): ?>
-
-<div class="form-group full">
-
-<label class="checkbox">
-
-<input
-    type="checkbox"
-    name="active"
-    value="1"
-    <?= (int) $station['active'] === 1
-        ? 'checked'
-        : '' ?>
->
-
-<span>
-Haltestelle ist aktiv
-</span>
-
-</label>
-
-</div>
-
-<?php endif; ?>
-
-
-</div>
-
-
-<div class="actions">
-
-<a
-    class="button button-secondary"
-    href="/?page=stations"
->
-← Abbrechen
-</a>
-
-<button
-    type="submit"
-    class="button"
->
-<?= $station
-    ? 'Änderungen speichern'
-    : 'Haltestelle anlegen'
-?>
-</button>
-
-</div>
-
-</form>
-
-</div>
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 850px;">
+
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
+
+            <!-- Überschrift -->
+            <div class="mb-4">
+                <h2 class="h4 mb-1">
+                    <?= $station ? 'Haltestelle bearbeiten' : 'Neue Haltestelle' ?>
+                </h2>
+
+                <div class="text-muted small">
+                    <?php if ($station): ?>
+                        Haltestellendaten bearbeiten
+                    <?php else: ?>
+                        Neue Haltestelle im System anlegen
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Fehlermeldung -->
+            <?php if ($error !== null): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars((string) $error) ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="post">
+
+                <input type="hidden" name="page" value="stations">
+
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="<?= htmlspecialchars($csrfToken) ?>"
+                >
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="<?= $station ? 'update' : 'create' ?>"
+                >
+
+                <?php if ($station): ?>
+                    <input
+                        type="hidden"
+                        name="id"
+                        value="<?= (int) $station['id'] ?>"
+                    >
+                <?php endif; ?>
+
+                <div class="row g-3">
+
+                    <div class="col-12">
+                        <label for="name" class="form-label">
+                            Name <span class="text-danger">*</span>
+                        </label>
+
+                        <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            required
+                            maxlength="200"
+                            placeholder="z. B. Hauptbahnhof"
+                            value="<?= htmlspecialchars(
+                                (string) ($station['name'] ?? '')
+                            ) ?>"
+                        >
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="short_name" class="form-label">
+                            Kurzname
+                        </label>
+
+                        <input
+                            id="short_name"
+                            type="text"
+                            name="short_name"
+                            class="form-control"
+                            maxlength="100"
+                            placeholder="z. B. Hbf"
+                            value="<?= htmlspecialchars(
+                                (string) ($station['short_name'] ?? '')
+                            ) ?>"
+                        >
+
+                        <div class="form-text">
+                            Kurze Bezeichnung für Anzeigen.
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="station_code" class="form-label">
+                            Haltestellencode
+                        </label>
+
+                        <input
+                            id="station_code"
+                            type="text"
+                            name="station_code"
+                            class="form-control"
+                            maxlength="50"
+                            placeholder="z. B. HST001"
+                            value="<?= htmlspecialchars(
+                                (string) ($station['station_code'] ?? '')
+                            ) ?>"
+                        >
+
+                        <div class="form-text">
+                            Eindeutiger interner Haltestellencode.
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="latitude" class="form-label">
+                            Breitengrad
+                        </label>
+
+                        <input
+                            id="latitude"
+                            type="number"
+                            name="latitude"
+                            class="form-control"
+                            step="any"
+                            placeholder="z. B. 48.3659"
+                            value="<?= htmlspecialchars(
+                                (string) ($station['latitude'] ?? '')
+                            ) ?>"
+                        >
+
+                        <div class="form-text">
+                            Geografische Position der Haltestelle.
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label for="longitude" class="form-label">
+                            Längengrad
+                        </label>
+
+                        <input
+                            id="longitude"
+                            type="number"
+                            name="longitude"
+                            class="form-control"
+                            step="any"
+                            placeholder="z. B. 10.8985"
+                            value="<?= htmlspecialchars(
+                                (string) ($station['longitude'] ?? '')
+                            ) ?>"
+                        >
+
+                        <div class="form-text">
+                            Geografische Position der Haltestelle.
+                        </div>
+                    </div>
+
+                    <?php if ($station): ?>
+                        <div class="col-12">
+                            <div class="form-check form-switch p-3 border rounded">
+                                <input
+                                    id="active"
+                                    type="checkbox"
+                                    name="active"
+                                    value="1"
+                                    class="form-check-input"
+                                    role="switch"
+                                    <?= (int) $station['active'] === 1
+                                        ? 'checked'
+                                        : '' ?>
+                                >
+
+                                <label for="active" class="form-check-label">
+                                    Haltestelle ist aktiv
+                                </label>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                </div>
+
+                <!-- Aktionen -->
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-4 pt-4 border-top">
+
+                    <a
+                        class="btn btn-secondary"
+                        href="/?page=stations"
+                    >
+                        ← Abbrechen
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        <?= $station
+                            ? 'Änderungen speichern'
+                            : 'Haltestelle anlegen' ?>
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
 
 </main>
 
-</body>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 
+</body>
 </html>

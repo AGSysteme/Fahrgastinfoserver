@@ -6,59 +6,137 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error !== null && is_array($_POST[
 }
 ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-bs-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maßnahme – Haltestellen auswählen</title>
-<style>
-* { box-sizing: border-box; }
-body { margin: 0; background: #f4f6f8; color: #222; font-family: Arial, sans-serif; }
-main { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-.card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px #0001; }
-.info { background: #f3f5f8; padding: 16px; border-radius: 8px; }
-.error { background: #fee2e2; color: #991b1b; padding: 12px; }
-.line-options { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
-.line-options label { padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
-#search { width: 100%; padding: 12px; margin: 12px 0; border: 1px solid #ccc; border-radius: 6px; }
-.station { display: flex; gap: 12px; padding: 12px; border-bottom: 1px solid #eee; }
-.station[hidden] { display: none; }
-.actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
-.button, button { background: #2563eb; color: white; padding: 12px 18px; border: 0; border-radius: 7px; text-decoration: none; cursor: pointer; font-size: 16px; }
-.secondary { background: #6b7280; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Maßnahme – Haltestellen auswählen – ELA Server</title>
+
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/custom.css">
 </head>
-<body><main><div class="card">
-<h1>Haltestellen auswählen</h1>
-<p>Schritt 2 von 4</p>
-<div class="info"><strong><?= htmlspecialchars((string) $wizard['name']) ?></strong><p><?= htmlspecialchars((string) $audio['text']) ?></p></div>
-<?php if ($error !== null): ?><p class="error" role="alert"><?= htmlspecialchars($error) ?></p><?php endif; ?>
-<form method="post" action="/?page=measure-wizard&step=2">
-<input type="hidden" name="page" value="measure-wizard">
-<input type="hidden" name="action" value="measure-wizard-step-2">
-<input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-<h2>Über Linien auswählen</h2>
-<p>Eine Linie wählt ihre Haltestellen gemeinsam aus. Haltestellen mehrerer Linien werden nur einmal angesprochen.</p>
-<div class="line-options">
-<?php foreach ($wizardLines as $line): ?>
-<?php $ids = array_map('intval', array_column($line['stations'], 'station_id')); ?>
-<label><input type="checkbox" class="line-toggle" data-stations="<?= htmlspecialchars(json_encode($ids), ENT_QUOTES) ?>" <?= !$ids ? 'disabled' : '' ?>> Linie <?= htmlspecialchars((string) $line['number']) ?> <?= htmlspecialchars((string) ($line['name'] ?? '')) ?></label>
-<?php endforeach; ?>
-</div>
-<h2>Haltestellen <span id="count" aria-live="polite"></span></h2>
-<label for="search">Haltestellen suchen</label>
-<input id="search" type="search" placeholder="Name, Kürzel oder Kennung">
-<p><button type="button" id="select-visible">Sichtbare auswählen</button> <button type="button" id="clear" class="secondary">Auswahl aufheben</button></p>
-<?php foreach ($stations as $station): ?>
-<label class="station">
-<input type="checkbox" name="stations[]" value="<?= (int) $station['id'] ?>" <?= in_array((int) $station['id'], $selected, true) ? 'checked' : '' ?>>
-<span><?= htmlspecialchars((string) $station['name']) ?> <small><?= htmlspecialchars((string) ($station['short_name'] ?? '')) ?> <?= htmlspecialchars((string) ($station['station_code'] ?? '')) ?><?= (int) $station['active'] !== 1 ? ' (inaktiv)' : '' ?></small></span>
-</label>
-<?php endforeach; ?>
-<?php if (!$stations): ?><p>Es sind noch keine Haltestellen vorhanden.</p><?php endif; ?>
-<div class="actions"><a class="button secondary" href="/?page=measure-wizard&step=1">← Zurück</a><button type="submit">Weiter →</button></div>
-</form>
-</div></main>
+
+<body>
+
+<header class="py-4 px-4 px-md-5">
+    <h1 class="h3 mb-0">ELA Server</h1>
+</header>
+
+<main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1000px;">
+
+    <div class="card shadow-sm">
+        <div class="card-body p-3 p-md-4">
+
+            <!-- Überschrift -->
+            <div class="mb-4">
+                <h2 class="h4 mb-1">Haltestellen auswählen</h2>
+                <div class="text-muted small">Schritt 2 von 4</div>
+            </div>
+
+            <!-- Maßnahmen-Info -->
+            <div class="card mb-4">
+                <div class="card-body p-3">
+                    <div class="fw-semibold"><?= htmlspecialchars((string) $wizard['name']) ?></div>
+                    <div class="text-muted small mt-1"><?= htmlspecialchars((string) $audio['text']) ?></div>
+                </div>
+            </div>
+
+            <!-- Fehlermeldung -->
+            <?php if ($error !== null): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= htmlspecialchars($error) ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="post" action="/?page=measure-wizard&step=2">
+
+                <input type="hidden" name="page" value="measure-wizard">
+                <input type="hidden" name="action" value="measure-wizard-step-2">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+
+                <!-- Auswahl über Linien -->
+                <h3 class="h5 mb-1">Über Linien auswählen</h3>
+                <p class="text-muted small mb-3">
+                    Eine Linie wählt ihre Haltestellen gemeinsam aus. Haltestellen mehrerer Linien werden nur einmal angesprochen.
+                </p>
+
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    <?php foreach ($wizardLines as $line): ?>
+                        <?php $ids = array_map('intval', array_column($line['stations'], 'station_id')); ?>
+                        <label class="btn btn-outline-secondary btn-sm mb-0 <?= !$ids ? 'disabled' : '' ?>">
+                            <input
+                                type="checkbox"
+                                class="form-check-input line-toggle me-1"
+                                data-stations="<?= htmlspecialchars(json_encode($ids), ENT_QUOTES) ?>"
+                                <?= !$ids ? 'disabled' : '' ?>
+                            >
+                            Linie <?= htmlspecialchars((string) $line['number']) ?>
+                            <?= htmlspecialchars((string) ($line['name'] ?? '')) ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+
+                <!-- Haltestellen -->
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                    <h3 class="h5 mb-0">
+                        Haltestellen <span id="count" class="text-muted small" aria-live="polite"></span>
+                    </h3>
+                </div>
+
+                <label for="search" class="form-label">Haltestellen suchen</label>
+                <input
+                    id="search"
+                    type="search"
+                    class="form-control mb-3"
+                    placeholder="Name, Kürzel oder Kennung"
+                >
+
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <button type="button" id="select-visible" class="btn btn-sm btn-primary">Sichtbare auswählen</button>
+                    <button type="button" id="clear" class="btn btn-sm btn-secondary">Auswahl aufheben</button>
+                </div>
+
+                <div class="list-group mb-3">
+                    <?php foreach ($stations as $station): ?>
+                        <label class="list-group-item d-flex align-items-start gap-3">
+                            <input
+                                type="checkbox"
+                                class="form-check-input mt-1 flex-shrink-0"
+                                name="stations[]"
+                                value="<?= (int) $station['id'] ?>"
+                                <?= in_array((int) $station['id'], $selected, true) ? 'checked' : '' ?>
+                            >
+                            <span>
+                                <span class="fw-semibold"><?= htmlspecialchars((string) $station['name']) ?></span>
+                                <small class="text-muted">
+                                    <?= htmlspecialchars((string) ($station['short_name'] ?? '')) ?>
+                                    <?= htmlspecialchars((string) ($station['station_code'] ?? '')) ?>
+                                    <?= (int) $station['active'] !== 1 ? ' (inaktiv)' : '' ?>
+                                </small>
+                            </span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+
+                <?php if (!$stations): ?>
+                    <p class="text-muted">Es sind noch keine Haltestellen vorhanden.</p>
+                <?php endif; ?>
+
+                <!-- Aktionen -->
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-4">
+                    <a class="btn btn-secondary" href="/?page=measure-wizard&step=1">← Zurück</a>
+                    <button type="submit" class="btn btn-primary">Weiter →</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</main>
+
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
 <script>
 const stations = [...document.querySelectorAll('input[name="stations[]"]')];
 const lines = [...document.querySelectorAll('.line-toggle')];
@@ -86,4 +164,5 @@ document.getElementById('select-visible').addEventListener('click', () => { stat
 document.getElementById('clear').addEventListener('click', () => { stations.forEach(s => s.checked = false); update(); });
 update();
 </script>
-</body></html>
+</body>
+</html>
