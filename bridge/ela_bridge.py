@@ -88,20 +88,40 @@ def touch_last_seen(device_id: str) -> bool:
         return cur.rowcount > 0
 
 
+# Erlaubte Statuswechsel: nur vorwärts. Endzustände (done, error) sind endgültig.
+ACK_FROM = {
+    "started": ("sent",),
+    "done": ("sent", "started"),
+    "error": ("sent", "started"),
+}
+FINAL_STATES = ("done", "error")
+
+
 def store_ack(device_id: str, cmd_id: int, state: str, detail: str) -> bool:
-    """Trägt die Quittung eines Controllers ein. False, wenn der Befehl nicht passt."""
+    """
+    Trägt die Quittung eines Controllers ein.
+    False, wenn der Befehl unbekannt ist oder der Statuswechsel nicht erlaubt ist
+    (z. B. eine späte Meldung nach einem Endzustand).
+    """
+    previous = ACK_FROM[state]
+    placeholders = ", ".join(["%s"] * len(previous))
+
+    if state in FINAL_STATES:
+        set_sql = "dc.status = %s, dc.detail = %s, dc.acked_at = UTC_TIMESTAMP()"
+        set_args = (state, detail or None)
+    else:
+        set_sql = "dc.status = %s"
+        set_args = (state,)
+
+    sql = (
+        "UPDATE device_commands dc "
+        "JOIN controllers c ON c.id = dc.controller_id "
+        f"SET {set_sql} "
+        f"WHERE dc.id = %s AND c.device_id = %s AND dc.status IN ({placeholders})"
+    )
+
     with db_status.connection().cursor() as cur:
-        cur.execute(
-            """
-            UPDATE device_commands dc
-            JOIN controllers c ON c.id = dc.controller_id
-            SET dc.status = %s,
-                dc.detail = %s,
-                dc.acked_at = UTC_TIMESTAMP()
-            WHERE dc.id = %s AND c.device_id = %s
-            """,
-            (state, detail or None, cmd_id, device_id),
-        )
+        cur.execute(sql, set_args + (cmd_id, device_id) + previous)
         return cur.rowcount > 0
 
 
@@ -178,7 +198,10 @@ def handle_ack(device_id: str, payload: dict) -> None:
     if known:
         log.info("Quittung %s von %s: %s", cmd_id, device_id, state)
     else:
-        log.warning("Quittung zu unbekanntem Befehl %s von %s", cmd_id, device_id)
+        log.warning(
+            "Quittung %s von %s (%s) nicht übernommen: unbekannter Befehl oder Statuswechsel nicht erlaubt",
+            cmd_id, device_id, state,
+        )
 
 
 def dispatch_pending(client: mqtt.Client) -> None:
