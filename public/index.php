@@ -7,6 +7,7 @@ require __DIR__ . '/../src/bootstrap.php';
 use Ela\Audio;
 use Ela\ComServers;
 use Ela\Controllers;
+use Ela\DeviceCommands;
 use Ela\Csrf;
 use Ela\Database;
 use Ela\Lines;
@@ -32,7 +33,8 @@ $services = new Services(
     new Controllers($db),
     new Audio($db),
     new Measures($db),
-    new ComServers($db)
+    new ComServers($db),
+    new DeviceCommands($db)
 );
 
 $router = new Router();

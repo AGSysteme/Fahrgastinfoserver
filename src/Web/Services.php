@@ -6,6 +6,7 @@ namespace Ela\Web;
 
 use Ela\Audio;
 use Ela\ComServers;
+use Ela\DeviceCommands;
 use Ela\Controllers;
 use Ela\Lines;
 use Ela\Measures;
@@ -23,6 +24,7 @@ final class Services
         public readonly Audio $audio,
         public readonly Measures $measures,
         public readonly ComServers $comServers,
+        public readonly DeviceCommands $deviceCommands,
     ) {
     }
 }

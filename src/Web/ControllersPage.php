@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ela\Web;
 
+use Ela\Config;
+use Ela\DeviceCommands;
 use RuntimeException;
 
 final class ControllersPage extends Page
@@ -43,6 +45,29 @@ final class ControllersPage extends Page
             $this->redirect(
                 '/?page=controllers&action=stations&id=' . $controllerId
             );
+        }
+
+        if ($action === 'test-play' || $action === 'stop') {
+            $controllerId = $this->number($_POST, 'controller_id');
+
+            if ($controllerId <= 0 || !$controllers->find($controllerId)) {
+                throw new RuntimeException('Controller nicht gefunden.');
+            }
+
+            $commands = $this->services->deviceCommands;
+
+            if ($action === 'stop') {
+                $commands->queueStop($controllerId);
+            } else {
+                // Testdurchsage: nur Audio, ohne Ausgänge
+                $durationMs = DeviceCommands::wavDurationMs(
+                    Config::systemAudioDir() . '/testdurchsage.wav'
+                );
+
+                $commands->queuePlay($controllerId, 0, [], $durationMs);
+            }
+
+            $this->redirect('/?page=controllers&action=commands&id=' . $controllerId);
         }
 
         if ($action === 'delete') {
@@ -123,6 +148,19 @@ final class ControllersPage extends Page
     public function get(string $action): void
     {
         $controllers = $this->services->controllers;
+
+        if ($action === 'commands') {
+            $controller = $controllers->find($this->number($_GET, 'id'));
+
+            if (!$controller) {
+                $this->abort(404, 'Controller nicht gefunden.');
+            }
+
+            $this->render('controller-commands.php', [
+                'controller' => $controller,
+                'commands' => $this->services->deviceCommands->recent((int) $controller['id']),
+            ]);
+        }
 
         if ($action === 'stations') {
             $controller = $controllers->find($this->number($_GET, 'id'));

@@ -266,6 +266,13 @@
                                             Bearbeiten
                                         </a>
 
+                                        <a
+                                            class="btn btn-sm btn-outline-secondary"
+                                            href="/?page=controllers&action=commands&id=<?= (int) $controller['id'] ?>"
+                                        >
+                                            Befehle
+                                        </a>
+
                                         <form
                                             method="post"
                                             onsubmit="return confirm(<?= htmlspecialchars(

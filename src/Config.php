@@ -35,6 +35,12 @@ final class Config
         return self::env('ELA_DB_PASSWORD', '');
     }
 
+    /** Feste Systemansagen (z. B. Testdurchsage), dauerhaft abgelegt. */
+    public static function systemAudioDir(): string
+    {
+        return self::env('ELA_SYSTEM_AUDIO_DIR', '/opt/ela/audio/system');
+    }
+
     public static function audioDir(): string
     {
         return self::env('ELA_AUDIO_DIR', '/opt/ela/audio/announcements');
