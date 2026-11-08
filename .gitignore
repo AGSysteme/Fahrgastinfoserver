@@ -9,6 +9,10 @@
 *.dump
 backups/
 
+# Python-Umgebung der Bridge
+bridge/venv/
+__pycache__/
+
 # Sicherungskopien
 *.bak
 *.bak*

@@ -1,0 +1,19 @@
+[Unit]
+Description=ELA-Bridge (MQTT <-> Datenbank)
+After=network-online.target mariadb.service mosquitto.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ela-bridge
+Group=ela-bridge
+WorkingDirectory=/opt/ela/app/bridge
+EnvironmentFile=/etc/ela-bridge/bridge.env
+ExecStart=/opt/ela/app/bridge/venv/bin/python /opt/ela/app/bridge/ela_bridge.py
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

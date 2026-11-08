@@ -1,0 +1,9 @@
+# Kopieren nach /etc/mosquitto/ela_acl
+#
+# Die Bridge darf alles unter ela/
+user ela-bridge
+topic readwrite ela/#
+
+# Je Controller ein eigener Benutzer, nur für seine Topics, z. B.:
+# user esp-ctrl01
+# topic readwrite ela/ctrl01/#
