@@ -4,7 +4,8 @@ Offene Punkte, die bewusst aufgeschoben wurden. Bei Erledigung abhaken und in de
 
 ## MQTT / Bridge
 - [ ] **TLS für Mosquitto einrichten** (aufgeschoben, bewusst). Derzeit unverschlüsselt im LAN, mit Benutzer und Passwort.
-- [ ] Bridge einrichten und starten (siehe `bridge/README.md`): Systembenutzer, DB-Benutzer `ela_bridge`, `/etc/ela-bridge/bridge.env`, Mosquitto-Passwortdatei, systemd-Dienst.
+- [x] Bridge einrichten und starten (siehe `bridge/README.md`): Systembenutzer, DB-Benutzer `ela_bridge`, `/etc/ela-bridge/bridge.env`, Mosquitto-Passwortdatei, systemd-Dienst. Stufe 1 getestet: Status-Meldung setzt `last_seen` (Controller 2).
+- [ ] Mosquitto- und DB-Passwörter erneuern, da Teile davon im Chat standen. Danach `bridge.env` und `/etc/mosquitto/ela_passwd` anpassen.
 - [ ] Bridge Stufe 2: Befehle für Maßnahmen senden (`cmd`, `stop`) auf Basis von `Ela\Dispatch::planFor()`.
 - [ ] Bridge: Quittungen (`ack`) verarbeiten und in einer Protokoll-Tabelle festhalten.
 - [ ] Bridge: Test mit einem echten Controller (ESP32, LAN) nach Firmware-Stand.
