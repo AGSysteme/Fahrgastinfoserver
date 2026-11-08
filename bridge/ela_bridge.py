@@ -232,21 +232,34 @@ def dispatch_pending(client: mqtt.Client) -> None:
                 _mark(cur, cmd_id, "error", f"Befehl zu alt ({int(age_s)} s), nicht gesendet")
                 continue
 
-            payload = json.loads(payload_json or "{}")
-            payload["id"] = int(cmd_id)
+            # Ein fehlerhafter Befehl darf die übrigen nicht blockieren
+            try:
+                _send_one(cur, client, cmd_id, command, payload_json, device_id)
+            except (ValueError, TypeError) as exc:
+                _mark(cur, cmd_id, "error", f"Ungültige Nutzdaten: {exc}")
 
-            topic = f"ela/{device_id}/" + ("stop" if command == "stop" else "cmd")
-            result = client.publish(topic, json.dumps(payload), qos=1)
 
-            if result.rc == mqtt.MQTT_ERR_SUCCESS:
-                cur.execute(
-                    "UPDATE device_commands SET status = 'sent', sent_at = UTC_TIMESTAMP() "
-                    "WHERE id = %s AND status = 'pending'",
-                    (cmd_id,),
-                )
-                log.info("Befehl %s an %s gesendet (%s)", cmd_id, device_id, topic)
-            else:
-                log.warning("Befehl %s konnte nicht gesendet werden: rc=%s", cmd_id, result.rc)
+def _send_one(cur, client, cmd_id: int, command: str, payload_json: str, device_id: str) -> None:
+    payload = json.loads(payload_json or "{}")
+
+    # Leere Nutzdaten kommen als [] an, erwartet wird ein Objekt
+    if not isinstance(payload, dict):
+        payload = {}
+
+    payload["id"] = int(cmd_id)
+
+    topic = f"ela/{device_id}/" + ("stop" if command == "stop" else "cmd")
+    result = client.publish(topic, json.dumps(payload), qos=1)
+
+    if result.rc == mqtt.MQTT_ERR_SUCCESS:
+        cur.execute(
+            "UPDATE device_commands SET status = 'sent', sent_at = UTC_TIMESTAMP() "
+            "WHERE id = %s AND status = 'pending'",
+            (cmd_id,),
+        )
+        log.info("Befehl %s an %s gesendet (%s)", cmd_id, device_id, topic)
+    else:
+        log.warning("Befehl %s konnte nicht gesendet werden: rc=%s", cmd_id, result.rc)
 
 
 def _mark(cur, cmd_id: int, status: str, detail: str) -> None:

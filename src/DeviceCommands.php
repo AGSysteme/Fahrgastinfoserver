@@ -139,7 +139,8 @@ final class DeviceCommands
         $stmt->execute([
             'controller_id' => $controllerId,
             'command' => $command,
-            'payload' => json_encode($payload, JSON_THROW_ON_ERROR),
+            // Leere Nutzdaten als Objekt {} speichern, nicht als Liste []
+            'payload' => json_encode($payload === [] ? new \stdClass() : $payload, JSON_THROW_ON_ERROR),
         ]);
 
         return (int) $this->db->lastInsertId();
