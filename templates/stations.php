@@ -5,24 +5,7 @@
  * @var string $search
  */
 ?>
-<!DOCTYPE html>
-<html lang="de" data-bs-theme="dark">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Haltestellen – ELA Server</title>
-
-    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/custom.css">
-</head>
-
-<body>
-
-<header class="py-4 px-4 px-md-5">
-    <h1 class="h3 mb-0">ELA Server</h1>
-</header>
+<?php $pageTitle = 'Haltestellen'; require __DIR__ . '/partials/layout-start.php'; ?>
 
 <main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1240px;">
 

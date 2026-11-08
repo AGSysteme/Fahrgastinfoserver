@@ -322,39 +322,6 @@ public function update(
         return $stmt->fetchAll();
     }
 
-    public function assignStation(
-        int $controllerId,
-        int $stationId
-    ): void {
-        $stmt = $this->db->prepare(
-            'INSERT OR IGNORE INTO controller_stations
-                (controller_id, station_id)
-             VALUES
-                (:controller_id, :station_id)'
-        );
-
-        $stmt->execute([
-            'controller_id' => $controllerId,
-            'station_id' => $stationId
-        ]);
-    }
-
-    public function removeStation(
-        int $controllerId,
-        int $stationId
-    ): void {
-        $stmt = $this->db->prepare(
-            'DELETE FROM controller_stations
-             WHERE controller_id = :controller_id
-               AND station_id = :station_id'
-        );
-
-        $stmt->execute([
-            'controller_id' => $controllerId,
-            'station_id' => $stationId
-        ]);
-    }
-
     public function allStations(): array
     {
         return $this->db
@@ -430,5 +397,12 @@ public function update(
 
             throw $e;
         }
+    }
+
+    public function count(): int
+    {
+        return (int) $this->db
+            ->query('SELECT COUNT(*) FROM controllers')
+            ->fetchColumn();
     }
 }

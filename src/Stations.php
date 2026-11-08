@@ -127,4 +127,11 @@ final class Stations
             'id' => $id
         ]);
     }
+
+    public function count(): int
+    {
+        return (int) $this->db
+            ->query('SELECT COUNT(*) FROM stations')
+            ->fetchColumn();
+    }
 }

@@ -14,7 +14,7 @@ final class Database
     {
         if (self::$connection === null) {
             $pdo = new PDO(
-                'sqlite:/opt/ela/data/ela.db'
+                'sqlite:' . Config::dbPath()
             );
 
             $pdo->setAttribute(

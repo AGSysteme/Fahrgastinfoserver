@@ -255,10 +255,10 @@ public function delete(int $id): void
 
         $models = [
             'kerstin' =>
-                '/opt/ela/models/de_DE-kerstin-low.onnx',
+                Config::modelsDir() . '/de_DE-kerstin-low.onnx',
 
             'thorsten' =>
-                '/opt/ela/models/de_DE-thorsten-medium.onnx'
+                Config::modelsDir() . '/de_DE-thorsten-medium.onnx'
         ];
 
         if (!isset($models[$voice])) {
@@ -276,7 +276,7 @@ public function delete(int $id): void
         }
 
         $piper =
-            '/opt/ela/piper-venv/bin/piper';
+            Config::piperBin();
 
         if (!is_file($piper)) {
             throw new RuntimeException(
@@ -285,7 +285,7 @@ public function delete(int $id): void
         }
 
         $audioDirectory =
-            '/opt/ela/audio/announcements';
+            Config::audioDir();
 
         if (!is_dir($audioDirectory)) {
 
@@ -429,7 +429,7 @@ public function createFromRecording(array $upload, string $title): int
     }
 
     $audioDirectory =
-        '/opt/ela/audio/announcements';
+        Config::audioDir();
 
     $filename =
         'announcement-' .
@@ -568,4 +568,10 @@ public function createFromRecording(array $upload, string $title): int
         }
     }
 
+    public function count(): int
+    {
+        return (int) $this->db
+            ->query('SELECT COUNT(*) FROM audio_files')
+            ->fetchColumn();
+    }
 }

@@ -239,66 +239,6 @@ final class Measures
         $stmt = $this->db->prepare('INSERT INTO measure_targets (measure_id, station_id) VALUES (?, ?)');
         foreach ($targets as $stationId) $stmt->execute([$measureId, $stationId]);
     }
-    public function replaceTargets(
-        int $measureId,
-        array $targets
-    ): void {
-
-        if ($measureId <= 0) {
-            throw new RuntimeException(
-                'Ungültige Maßnahme.'
-            );
-        }
-
-        $this->db->beginTransaction();
-
-        try {
-
-            $delete = $this->db->prepare(
-                'DELETE FROM measure_targets
-                 WHERE measure_id = :measure_id'
-            );
-
-            $delete->execute([
-                'measure_id' => $measureId
-            ]);
-
-            $this->addTargets(
-                $measureId,
-                $targets
-            );
-
-            $check = $this->db->prepare(
-                'SELECT COUNT(*)
-                 FROM measure_targets
-                 WHERE measure_id = :measure_id'
-            );
-
-            $check->execute([
-                'measure_id' => $measureId
-            ]);
-
-            $targetCount =
-                (int) $check->fetchColumn();
-
-            if ($targetCount <= 0) {
-                throw new RuntimeException(
-                    'Es wurden keine Ziele ausgewählt.'
-                );
-            }
-
-            $this->db->commit();
-
-        } catch (\Throwable $e) {
-
-            if ($this->db->inTransaction()) {
-                $this->db->rollBack();
-            }
-
-            throw $e;
-        }
-    }
-
     public function update(
         int $id,
         string $name,
@@ -534,5 +474,69 @@ public function targets(int $measureId): array
                 'Die ausgewählte Audiodatei wurde nicht gefunden.'
             );
         }
+    }
+
+    /**
+     * Zählt alle Maßnahmen und ordnet sie nach Status:
+     * aktiv, geplant oder abgelaufen.
+     *
+     * @return array{total: int, active: int, planned: int, expired: int}
+     */
+    public function statusCounts(int $now): array
+    {
+        $measures = $this->db
+            ->query(
+                'SELECT start_at, end_at, repeat_type, active
+                 FROM measures'
+            )
+            ->fetchAll(PDO::FETCH_ASSOC);
+
+        $counts = [
+            'total' => count($measures),
+            'active' => 0,
+            'planned' => 0,
+            'expired' => 0,
+        ];
+
+        foreach ($measures as $measure) {
+            if ((int) $measure['active'] !== 1) {
+                $counts['expired']++;
+                continue;
+            }
+
+            $startTimestamp = strtotime((string) $measure['start_at']);
+
+            $endTimestamp = null;
+
+            if (!empty($measure['end_at'])) {
+                $endTimestamp = strtotime((string) $measure['end_at']);
+            }
+
+            if ($startTimestamp !== false && $startTimestamp > $now) {
+                $counts['planned']++;
+                continue;
+            }
+
+            if (
+                (
+                    (string) $measure['repeat_type'] === 'once' &&
+                    $startTimestamp !== false &&
+                    $startTimestamp + 5 < $now
+                ) ||
+                (
+                    (string) $measure['repeat_type'] !== 'once' &&
+                    $endTimestamp !== null &&
+                    $endTimestamp !== false &&
+                    $endTimestamp < $now
+                )
+            ) {
+                $counts['expired']++;
+                continue;
+            }
+
+            $counts['active']++;
+        }
+
+        return $counts;
     }
 }
