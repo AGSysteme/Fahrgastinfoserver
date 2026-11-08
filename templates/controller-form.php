@@ -7,6 +7,7 @@
  * @var string $csrfToken
  */
 ?>
+<?php $transport = (string) ($controller['transport'] ?? 'lan'); ?>
 <?php $pageTitle = $controller ? 'Controller bearbeiten' : 'Neuer Controller'; require __DIR__ . '/partials/layout-start.php'; ?>
 
 <main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1240px;">
@@ -112,8 +113,52 @@
                     </div>
                 </div>
 
-                <!-- MQTT -->
+                <!-- Anbindung -->
                 <div class="card mb-4">
+                    <div class="card-body p-3 p-md-4">
+
+                        <h3 class="h5 mb-1">Anbindung</h3>
+
+                        <p class="text-muted small mb-4">
+                            Wie der Controller das ELA-System erreicht.
+                        </p>
+
+                        <div class="d-flex flex-wrap gap-4">
+
+                            <div class="form-check">
+                                <input
+                                    id="transport_lan"
+                                    type="radio"
+                                    name="transport"
+                                    value="lan"
+                                    class="form-check-input"
+                                    <?= $transport === 'lan' ? 'checked' : '' ?>
+                                >
+                                <label for="transport_lan" class="form-check-label">
+                                    LAN (MQTT direkt)
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input
+                                    id="transport_rs485"
+                                    type="radio"
+                                    name="transport"
+                                    value="rs485"
+                                    class="form-check-input"
+                                    <?= $transport === 'rs485' ? 'checked' : '' ?>
+                                >
+                                <label for="transport_rs485" class="form-check-label">
+                                    RS485 über COM-Server
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MQTT -->
+                <div class="card mb-4" data-transport="lan">
                     <div class="card-body p-3 p-md-4">
 
                         <h3 class="h5 mb-1">MQTT</h3>
@@ -188,7 +233,7 @@
                 </div>
 
                 <!-- COM-Server -->
-                <div class="card mb-4">
+                <div class="card mb-4" data-transport="rs485">
                     <div class="card-body p-3 p-md-4">
 
                         <h3 class="h5 mb-1">COM-Server</h3>
@@ -364,6 +409,7 @@
 </main>
 
 <script src="/assets/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/controller-form.js"></script>
 
 </body>
 </html>

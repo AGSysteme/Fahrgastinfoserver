@@ -97,7 +97,8 @@ public function create(
     ?string $ipAddress,
     ?int $comServerId = null,
     ?int $serialPort = null,
-    ?int $rs485Address = null
+    ?int $rs485Address = null,
+    string $transport = 'lan'
 ): int {
     $stmt = $this->db->prepare(
         'INSERT INTO controllers
@@ -110,6 +111,7 @@ public function create(
                 com_server_id,
                 serial_port,
                 rs485_address,
+                transport,
                 enabled
             )
          VALUES
@@ -122,6 +124,7 @@ public function create(
                 :com_server_id,
                 :serial_port,
                 :rs485_address,
+                :transport,
                 1
             )'
     );
@@ -141,7 +144,8 @@ public function create(
                 : null,
             'com_server_id' => $comServerId,
             'serial_port' => $serialPort,
-            'rs485_address' => $rs485Address
+            'rs485_address' => $rs485Address,
+            'transport' => $transport
         ]);
     } catch (\PDOException $e) {
 
@@ -185,7 +189,8 @@ public function update(
     bool $enabled,
     ?int $comServerId = null,
     ?int $serialPort = null,
-    ?int $rs485Address = null
+    ?int $rs485Address = null,
+    string $transport = 'lan'
 ): void {
     $stmt = $this->db->prepare(
         'UPDATE controllers
@@ -198,6 +203,7 @@ public function update(
             com_server_id = :com_server_id,
             serial_port = :serial_port,
             rs485_address = :rs485_address,
+            transport = :transport,
             enabled = :enabled,
             updated_at = CURRENT_TIMESTAMP
          WHERE id = :id'
@@ -220,6 +226,7 @@ public function update(
             'com_server_id' => $comServerId,
             'serial_port' => $serialPort,
             'rs485_address' => $rs485Address,
+            'transport' => $transport,
             'enabled' => $enabled ? 1 : 0
         ]);
     } catch (\PDOException $e) {
@@ -288,7 +295,8 @@ public function update(
             ->query(
                 'SELECT
                     s.*,
-                    cs.controller_id AS assigned_controller_id
+                    cs.controller_id AS assigned_controller_id,
+                    cs.output_pin AS output_pin
                  FROM stations s
                  LEFT JOIN controller_stations cs
                     ON cs.station_id = s.id
@@ -297,9 +305,15 @@ public function update(
             ->fetchAll();
     }
 
+    /**
+     * Ersetzt die Haltestellen eines Controllers.
+     *
+     * @param array<int, int|null> $pins  Ausgang (1–16) je Haltestellen-ID
+     */
     public function replaceStations(
         int $controllerId,
-        array $stationIds
+        array $stationIds,
+        array $pins = []
     ): void {
         $this->db->beginTransaction();
 
@@ -324,12 +338,14 @@ public function update(
                 'INSERT INTO controller_stations
                     (
                         controller_id,
-                        station_id
+                        station_id,
+                        output_pin
                     )
                  VALUES
                     (
                         :controller_id,
-                        :station_id
+                        :station_id,
+                        :output_pin
                     )'
             );
 
@@ -341,9 +357,12 @@ public function update(
                     continue;
                 }
 
+                $pin = $pins[$stationId] ?? null;
+
                 $stmt->execute([
                     'controller_id' => $controllerId,
-                    'station_id' => $stationId
+                    'station_id' => $stationId,
+                    'output_pin' => $pin !== null ? (int) $pin : null
                 ]);
             }
 

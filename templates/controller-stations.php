@@ -205,6 +205,7 @@
                                             class="station"
                                             draggable="true"
                                             data-station-id="<?= (int) $station['id'] ?>"
+                                            data-pin="<?= $station['output_pin'] !== null ? (int) $station['output_pin'] : '' ?>"
                                         >
 
                                             <div class="handle">☰</div>
@@ -297,6 +298,12 @@ document.addEventListener('dragstart', function (event) {
         return;
     }
 
+    // Auswahlfeld des Ausgangs darf kein Ziehen auslösen
+    if (event.target.closest('select')) {
+        event.preventDefault();
+        return;
+    }
+
     dragged = station;
 
     station.classList.add('dragging');
@@ -323,6 +330,7 @@ document.addEventListener('dragend', function () {
     }
 
     dragged = null;
+    syncPins();
 });
 
 
@@ -418,10 +426,61 @@ function insertStation(list, event) {
                 list,
                 event
             );
+
+            syncPins();
         }
     );
 
 });
+
+
+/*
+ * ---------------------------------------------------------
+ * Ausgangs-Auswahl: nur bei zugeordneten Haltestellen
+ * ---------------------------------------------------------
+ */
+
+function makePinSelect(stationId, pin) {
+    const select = document.createElement('select');
+    select.name = 'pins[' + stationId + ']';
+    select.className = 'form-select form-select-sm pin-select';
+    select.setAttribute('aria-label', 'Ausgang');
+
+    const empty = document.createElement('option');
+    empty.value = '';
+    empty.textContent = '–';
+    select.appendChild(empty);
+
+    for (let n = 1; n <= 16; n++) {
+        const option = document.createElement('option');
+        option.value = String(n);
+        option.textContent = String(n);
+        if (String(n) === String(pin)) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    }
+
+    return select;
+}
+
+function syncPins() {
+    available
+        .querySelectorAll('.pin-select')
+        .forEach(select => select.remove());
+
+    assigned
+        .querySelectorAll('.station')
+        .forEach(station => {
+            if (!station.querySelector('.pin-select')) {
+                station.appendChild(
+                    makePinSelect(station.dataset.stationId, station.dataset.pin || '')
+                );
+            }
+        });
+}
+
+syncPins();
 
 
 /*
