@@ -9,6 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error !== null && is_array($_POST[
 
 <main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1000px;">
 
+    <?php require __DIR__ . '/partials/alert.php'; ?>
+
     <div class="card shadow-sm">
         <div class="card-body p-3 p-md-4">
 
@@ -26,12 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error !== null && is_array($_POST[
                 </div>
             </div>
 
-            <!-- Fehlermeldung -->
-            <?php if ($error !== null): ?>
-                <div class="alert alert-danger" role="alert">
-                    <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
 
             <form method="post" action="/?page=measure-wizard&step=2">
 

@@ -22,7 +22,7 @@ final class Lines
 
             $stmt = $this->db->prepare(
                 'SELECT *
-                 FROM lines
+                 FROM `lines`
                  WHERE number LIKE :search
                     OR name LIKE :search
                  ORDER BY number'
@@ -38,7 +38,7 @@ final class Lines
         return $this->db
             ->query(
                 'SELECT *
-                 FROM lines
+                 FROM `lines`
                  ORDER BY number'
             )
             ->fetchAll();
@@ -50,7 +50,7 @@ final class Lines
 
         $stmt = $this->db->prepare(
             'SELECT *
-             FROM lines
+             FROM `lines`
              WHERE id = :id'
         );
 
@@ -80,7 +80,7 @@ final class Lines
         }
 
         $stmt = $this->db->prepare(
-            'INSERT INTO lines
+            'INSERT INTO `lines`
                 (number, name, description)
              VALUES
                 (:number, :name, :description)'
@@ -100,12 +100,7 @@ final class Lines
 
         } catch (\PDOException $e) {
 
-            if (
-                str_contains(
-                    $e->getMessage(),
-                    'UNIQUE constraint failed'
-                )
-            ) {
+            if (Database::duplicateKey($e) === 'number') {
                 throw new RuntimeException(
                     'Diese Liniennummer existiert bereits.'
                 );
@@ -142,7 +137,7 @@ final class Lines
         }
 
         $stmt = $this->db->prepare(
-            'UPDATE lines
+            'UPDATE `lines`
              SET
                 number = :number,
                 name = :name,
@@ -168,12 +163,7 @@ final class Lines
 
         } catch (\PDOException $e) {
 
-            if (
-                str_contains(
-                    $e->getMessage(),
-                    'UNIQUE constraint failed'
-                )
-            ) {
+            if (Database::duplicateKey($e) === 'number') {
                 throw new RuntimeException(
                     'Diese Liniennummer existiert bereits.'
                 );
@@ -226,7 +216,7 @@ final class Lines
         }
 
         $stmt = $this->db->prepare(
-            'DELETE FROM lines
+            'DELETE FROM `lines`
              WHERE id = :id'
         );
 
@@ -238,7 +228,7 @@ final class Lines
     public function count(): int
     {
         return (int) $this->db
-            ->query('SELECT COUNT(*) FROM lines')
+            ->query('SELECT COUNT(*) FROM `lines`')
             ->fetchColumn();
     }
 }

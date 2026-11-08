@@ -9,6 +9,8 @@
 
 <main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1200px;">
 
+    <?php require __DIR__ . '/partials/alert.php'; ?>
+
     <!-- =====================================================
          NEUE ANSAGE
          ===================================================== -->
@@ -24,12 +26,6 @@
                 </div>
             </div>
 
-            <!-- Fehlermeldung -->
-            <?php if ($error !== null): ?>
-                <div class="alert alert-danger" role="alert">
-                    <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
 
             <form method="post">
 

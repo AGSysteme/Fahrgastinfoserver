@@ -2,19 +2,6 @@
 
 declare(strict_types=1);
 
-$wizard =
-    $_SESSION['measure_wizard']
-        ?? [];
-
-$selectedAudioId =
-    !empty($wizard['audio_id'])
-        ? (int) $wizard['audio_id']
-        : (
-            isset($_GET['audio_id'])
-                ? (int) $_GET['audio_id']
-                : 0
-        );
-
 $wizardName =
     (string) (
         $wizard['name']
@@ -25,6 +12,8 @@ $wizardName =
 <?php $pageTitle = 'Neue Maßnahme'; require __DIR__ . '/partials/layout-start.php'; ?>
 
 <main class="container-fluid py-4 px-3 px-md-4" style="max-width: 900px;">
+
+    <?php require __DIR__ . '/partials/alert.php'; ?>
 
     <div class="card shadow-sm">
         <div class="card-body p-3 p-md-4">

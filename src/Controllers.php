@@ -145,45 +145,25 @@ public function create(
         ]);
     } catch (\PDOException $e) {
 
-        if (
-            str_contains(
-                $e->getMessage(),
-                'UNIQUE constraint failed: controllers.com_server_id, controllers.serial_port, controllers.rs485_address'
-            )
-        ) {
+        if (Database::duplicateKey($e) === 'uq_controllers_port') {
             throw new \RuntimeException(
                 'Diese Kombination aus COM-Server, seriellem Port und RS485-Adresse ist bereits einem anderen Controller zugeordnet.'
             );
         }
 
-        if (
-            str_contains(
-                $e->getMessage(),
-                'controllers.name'
-            )
-        ) {
+        if (Database::duplicateKey($e) === 'name') {
             throw new \RuntimeException(
                 'Der Controller-Name ist bereits vergeben.'
             );
         }
 
-        if (
-            str_contains(
-                $e->getMessage(),
-                'controllers.device_id'
-            )
-        ) {
+        if (Database::duplicateKey($e) === 'device_id') {
             throw new \RuntimeException(
                 'Die Geräte-ID ist bereits vergeben.'
             );
         }
 
-        if (
-            str_contains(
-                $e->getMessage(),
-                'controllers.mqtt_client_id'
-            )
-        ) {
+        if (Database::duplicateKey($e) === 'mqtt_client_id') {
             throw new \RuntimeException(
                 'Die MQTT Client-ID ist bereits vergeben.'
             );
@@ -244,45 +224,25 @@ public function update(
         ]);
     } catch (\PDOException $e) {
 
-        if (
-            str_contains(
-                $e->getMessage(),
-                'UNIQUE constraint failed: controllers.com_server_id, controllers.serial_port, controllers.rs485_address'
-            )
-        ) {
+        if (Database::duplicateKey($e) === 'uq_controllers_port') {
             throw new \RuntimeException(
                 'Diese Kombination aus COM-Server, seriellem Port und RS485-Adresse ist bereits einem anderen Controller zugeordnet.'
             );
         }
 
-        if (
-            str_contains(
-                $e->getMessage(),
-                'controllers.name'
-            )
-        ) {
+        if (Database::duplicateKey($e) === 'name') {
             throw new \RuntimeException(
                 'Der Controller-Name ist bereits vergeben.'
             );
         }
 
-        if (
-            str_contains(
-                $e->getMessage(),
-                'controllers.device_id'
-            )
-        ) {
+        if (Database::duplicateKey($e) === 'device_id') {
             throw new \RuntimeException(
                 'Die Geräte-ID ist bereits vergeben.'
             );
         }
 
-        if (
-            str_contains(
-                $e->getMessage(),
-                'controllers.mqtt_client_id'
-            )
-        ) {
+        if (Database::duplicateKey($e) === 'mqtt_client_id') {
             throw new \RuntimeException(
                 'Die MQTT Client-ID ist bereits vergeben.'
             );

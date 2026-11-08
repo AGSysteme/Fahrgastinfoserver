@@ -10,9 +10,29 @@ namespace Ela;
  */
 final class Config
 {
-    public static function dbPath(): string
+    public static function dbHost(): string
     {
-        return self::env('ELA_DB_PATH', '/opt/ela/data/ela.db');
+        return self::env('ELA_DB_HOST', '127.0.0.1');
+    }
+
+    public static function dbPort(): string
+    {
+        return self::env('ELA_DB_PORT', '3306');
+    }
+
+    public static function dbName(): string
+    {
+        return self::env('ELA_DB_NAME', 'ela');
+    }
+
+    public static function dbUser(): string
+    {
+        return self::env('ELA_DB_USER', 'ela');
+    }
+
+    public static function dbPassword(): string
+    {
+        return self::env('ELA_DB_PASSWORD', '');
     }
 
     public static function audioDir(): string

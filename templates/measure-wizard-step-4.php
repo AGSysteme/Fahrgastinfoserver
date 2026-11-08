@@ -24,6 +24,8 @@ if (!is_array($schedule)) {
 
 <main class="container-fluid py-4 px-3 px-md-4" style="max-width: 1000px;">
 
+    <?php require __DIR__ . '/partials/alert.php'; ?>
+
     <div class="card shadow-sm">
         <div class="card-body p-3 p-md-4">
 

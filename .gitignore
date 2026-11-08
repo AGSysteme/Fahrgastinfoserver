@@ -4,6 +4,10 @@
 *.sqlite3
 *.db-wal
 *.db-shm
+*.sql
+*.sql.gz
+*.dump
+backups/
 
 # Sicherungskopien
 *.bak
