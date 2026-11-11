@@ -67,7 +67,7 @@ Sofort alle Pins freigeben und die Wiedergabe beenden. Danach Quittung mit `"sta
 
 ## Audiodateien auf der SD-Karte
 
-- Format: WAV, PCM 8 Bit unsigned, mono, 16 kHz (für den internen DAC des ESP32, Ausgang GPIO 25).
+- Format: WAV, PCM 16 Bit signed (little endian), mono, 16 kHz. Ausgabe über I²S an den externen DAC PCM5102A (BCK GPIO 26, WS GPIO 27, DATA GPIO 14).
 - Dateiname: `<audio-id als 4-stellige Zahl>.wav`, z. B. `0000.wav`.
 - Die Test-Ansage hat die ID `0`. Quelle auf dem Server: `audio/system/testdurchsage.wav`.
 - Das Übertragen von Ansagen auf die SD-Karte ist ein eigener Schritt (noch offen).
