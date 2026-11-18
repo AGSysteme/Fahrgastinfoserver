@@ -23,6 +23,8 @@ from typing import Optional
 import paho.mqtt.client as mqtt
 import pymysql
 
+from scheduler import run_scheduler
+
 log = logging.getLogger("ela-bridge")
 
 TOPIC_STATUS = "ela/+/status"
@@ -319,6 +321,14 @@ def main() -> None:
         target=dispatch_loop,
         args=(client, stop),
         name="dispatch",
+        daemon=True,
+    ).start()
+
+    # Maßnahmen-Scheduler: legt fällige Befehle in device_commands an
+    threading.Thread(
+        target=run_scheduler,
+        args=(lambda: Database().connection(), stop),
+        name="scheduler",
         daemon=True,
     ).start()
 

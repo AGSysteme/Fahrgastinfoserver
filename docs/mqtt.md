@@ -36,6 +36,7 @@ Alle Nachrichten sind JSON in UTF-8, QoS 1.
 | `pins` | Ausgänge 1–16, die für die Dauer der Ansage aktiviert werden. Leer = nur Audio |
 | `duration_ms` | Länge der Ansage in Millisekunden |
 | `max_ms` | Sicherheitsgrenze: `duration_ms` + 5000 ms |
+| `url` | optional: Adresse der Ansagedatei (16 kHz, 16 Bit, mono). Wird nur geladen, wenn `NNNN.WAV` auf der SD-Karte fehlt |
 
 **Ablauf im Controller:**
 1. Pins in `pins` aktivieren (AGE-Leitung auf GND ziehen).
