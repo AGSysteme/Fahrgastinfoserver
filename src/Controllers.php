@@ -384,4 +384,42 @@ public function update(
             ->query('SELECT COUNT(*) FROM controllers')
             ->fetchColumn();
     }
+
+    /**
+     * Zählt die Controller nach Zustand.
+     * Online/Offline gilt nur für LAN-Controller (MQTT-Heartbeat). RS485 wird nicht überwacht.
+     *
+     * @return array{total: int, online: int, offline: int, inactive: int, rs485: int}
+     */
+    public function statusCounts(int $now, int $thresholdSeconds = 120): array
+    {
+        $rows = $this->db
+            ->query('SELECT enabled, transport, last_seen FROM controllers')
+            ->fetchAll(PDO::FETCH_ASSOC);
+
+        $counts = ['total' => count($rows), 'online' => 0, 'offline' => 0, 'inactive' => 0, 'rs485' => 0];
+        $utc = new \DateTimeZone('UTC');
+
+        foreach ($rows as $row) {
+            if ((int) $row['enabled'] !== 1) {
+                $counts['inactive']++;
+                continue;
+            }
+
+            if (($row['transport'] ?? 'lan') !== 'lan') {
+                $counts['rs485']++;
+                continue;
+            }
+
+            $online = false;
+            if (!empty($row['last_seen'])) {
+                $seen = new \DateTimeImmutable((string) $row['last_seen'], $utc);
+                $online = ($now - $seen->getTimestamp()) < $thresholdSeconds;
+            }
+
+            $counts[$online ? 'online' : 'offline']++;
+        }
+
+        return $counts;
+    }
 }

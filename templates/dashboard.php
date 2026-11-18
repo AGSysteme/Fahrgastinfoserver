@@ -29,6 +29,24 @@
                 <div class="card-body">
                     <div class="small text-body-secondary">Controller</div>
                     <div class="fs-2 fw-bold mt-1"><?= $controllersCount ?></div>
+
+                    <div class="row g-0 text-center mt-2">
+                        <div class="col">
+                            <div class="fs-5 fw-bold text-success"><?= $controllersOnlineCount ?></div>
+                            <div class="small text-body-secondary">Online</div>
+                        </div>
+                        <div class="col">
+                            <div class="fs-5 fw-bold text-danger"><?= $controllersOfflineCount ?></div>
+                            <div class="small text-body-secondary">Offline</div>
+                        </div>
+                        <div class="col">
+                            <div class="fs-5 fw-bold"><?= $controllersInactiveCount ?></div>
+                            <div class="small text-body-secondary">Inaktiv</div>
+                        </div>
+                    </div>
+                    <?php if ($controllersRs485Count > 0): ?>
+                        <div class="small text-body-secondary mt-2">davon RS485 (nicht überwacht): <?= $controllersRs485Count ?></div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

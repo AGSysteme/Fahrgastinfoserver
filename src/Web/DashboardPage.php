@@ -10,6 +10,7 @@ final class DashboardPage extends Page
     {
         $services = $this->services;
         $measures = $services->measures->statusCounts(time());
+        $controllers = $services->controllers->statusCounts(time());
 
         $this->render('dashboard.php', [
             'stationsCount' => $services->stations->count(),
@@ -20,6 +21,10 @@ final class DashboardPage extends Page
             'measuresActiveCount' => $measures['active'],
             'measuresPlannedCount' => $measures['planned'],
             'measuresExpiredCount' => $measures['expired'],
+            'controllersOnlineCount' => $controllers['online'],
+            'controllersOfflineCount' => $controllers['offline'],
+            'controllersInactiveCount' => $controllers['inactive'],
+            'controllersRs485Count' => $controllers['rs485'],
         ]);
     }
 }
