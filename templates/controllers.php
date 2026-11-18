@@ -152,6 +152,27 @@
                                             ) ?>
                                         </h3>
 
+                                        <?php
+                                        // Online: letzte MQTT-Meldung höchstens 120 s alt (LAN-Controller)
+                                        $isLan = ($controller['transport'] ?? 'lan') === 'lan';
+                                        $lastSeen = $controller['last_seen'] ?? null;
+                                        $online = false;
+                                        if ($isLan && $lastSeen) {
+                                            $seen = new DateTimeImmutable((string) $lastSeen, new DateTimeZone('UTC'));
+                                            $online = (time() - $seen->getTimestamp()) < 120;
+                                        }
+                                        ?>
+                                        <div class="d-flex gap-2 align-items-center flex-shrink-0">
+
+                                        <?php if ($isLan): ?>
+                                            <span
+                                                class="badge flex-shrink-0 <?= $online ? 'text-bg-success' : 'text-bg-danger' ?>"
+                                                title="Letzte Meldung: <?= htmlspecialchars((string) ($lastSeen ?? 'nie')) ?> (UTC)"
+                                            >
+                                                <?= $online ? 'online' : 'offline' ?>
+                                            </span>
+                                        <?php endif; ?>
+
                                         <?php if ((int) $controller['enabled'] === 1): ?>
 
                                             <span class="badge text-bg-success flex-shrink-0">
@@ -165,6 +186,8 @@
                                             </span>
 
                                         <?php endif; ?>
+
+                                        </div>
 
                                     </div>
 
