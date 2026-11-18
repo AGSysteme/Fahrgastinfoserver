@@ -13,8 +13,8 @@ Regeln:
   - "Nachts deaktivieren": keine Auslösung zwischen NIGHT_START und NIGHT_END (Berlin).
   - Jeder Termin wird genau einmal ausgelöst (measure_runs, eindeutiger Schlüssel).
   - Nur LAN-Controller mit Ausgang und aktiviert. RS485 folgt später.
-  - Ansage wird als 16 kHz / 16 Bit / mono nach AUDIO_DEVICE_DIR exportiert
-    und per URL geliefert.
+  - Die Ansage liegt als einzige Datei im Controller-Format (16 kHz, 16 Bit, mono)
+    und wird per URL geliefert.
 """
 
 from __future__ import annotations
@@ -23,7 +23,6 @@ import json
 import logging
 import os
 import wave
-import subprocess
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -44,7 +43,6 @@ AUDIO_RATE = 16000
 
 AUDIO_BASE_URL = os.environ.get("ELA_AUDIO_BASE_URL", "http://192.168.3.104:8080/audio")
 AUDIO_SRC_DIR = os.environ.get("ELA_AUDIO_SRC_DIR", "/opt/ela/audio/announcements")
-AUDIO_DEVICE_DIR = os.environ.get("ELA_AUDIO_DEVICE_DIR", "/opt/ela/audio/device")
 
 
 def now_local() -> datetime:
@@ -98,10 +96,11 @@ def due_slot(measure: dict, now: datetime) -> datetime | None:
     return slot if 0 <= since <= SLOT_GRACE_S else None
 
 
-def ensure_device_audio(conn, audio_id: int) -> tuple[str, int]:
+def audio_for_controllers(conn, audio_id: int) -> tuple[str, int]:
     """
-    Sorgt dafür, dass AUDIO_DEVICE_DIR/NNNN.wav im Controller-Format existiert.
-    Gibt (Dateiname, Dauer in ms) zurück. Wirft Exception bei Fehler.
+    Prüft die Ansage im Controller-Format (16 kHz, 16 Bit, mono) und gibt
+    (Dateiname, Dauer in ms) zurück. Die Datei ist die einzige Kopie der Ansage;
+    die Controller laden sie von AUDIO_BASE_URL/announcements/<Dateiname>.
     """
     if not 0 < audio_id <= 9999:
         raise ValueError(f"Ansagen-ID {audio_id} außerhalb 1..9999")
@@ -112,29 +111,22 @@ def ensure_device_audio(conn, audio_id: int) -> tuple[str, int]:
     if not row:
         raise ValueError(f"Ansage {audio_id} existiert nicht")
 
-    src = os.path.join(AUDIO_SRC_DIR, os.path.basename(row[0]))
-    if not os.path.isfile(src):
-        raise FileNotFoundError(f"Quelldatei fehlt: {src}")
+    name = os.path.basename(row[0])
+    path = os.path.join(AUDIO_SRC_DIR, name)
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"Ansagedatei fehlt: {name}")
 
-    os.makedirs(AUDIO_DEVICE_DIR, exist_ok=True)
-    dst = os.path.join(AUDIO_DEVICE_DIR, f"{audio_id:04d}.wav")
+    with wave.open(path, "rb") as w:
+        rate, channels, width = w.getframerate(), w.getnchannels(), w.getsampwidth()
+        duration_ms = round(w.getnframes() * 1000 / rate)
 
-    if not os.path.isfile(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
-        tmp = dst + ".tmp.wav"
-        result = subprocess.run(
-            ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", src,
-             "-ac", "1", "-ar", str(AUDIO_RATE), "-acodec", "pcm_s16le", "-f", "wav", tmp],
-            capture_output=True, text=True, timeout=120,
+    if (rate, channels, width) != (AUDIO_RATE, 1, 2):
+        raise ValueError(
+            f"Ansage {audio_id} ist nicht im Controller-Format "
+            f"({rate} Hz, {channels} Kanal, {width * 8} Bit). Bitte umwandeln."
         )
-        if result.returncode != 0 or not os.path.isfile(tmp):
-            raise RuntimeError(f"ffmpeg fehlgeschlagen: {result.stderr.strip()[:200]}")
-        os.replace(tmp, dst)
-        log.info("Ansage %d für Controller exportiert: %s", audio_id, dst)
 
-    with wave.open(dst, "rb") as w:
-        duration_ms = round(w.getnframes() * 1000 / w.getframerate())
-
-    return os.path.basename(dst), duration_ms
+    return name, duration_ms
 
 
 def plan_controllers(conn, measure_id: int) -> tuple[dict, list[str]]:
@@ -210,8 +202,8 @@ def fire(conn, measure: dict, slot: datetime, now: datetime) -> None:
 
     detail_parts: list[str] = []
     try:
-        audio_file, duration_ms = ensure_device_audio(conn, int(measure["audio_id"]))
-        url = f"{AUDIO_BASE_URL}/device/{audio_file}"
+        audio_file, duration_ms = audio_for_controllers(conn, int(measure["audio_id"]))
+        url = f"{AUDIO_BASE_URL}/announcements/{audio_file}"
         controllers, notes = plan_controllers(conn, measure["id"])
 
         queued = 0

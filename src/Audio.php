@@ -165,42 +165,20 @@ public function create(
         'file_size' => $fileSize
     ]);
 
-    $id = (int) $this->db->lastInsertId();
-    $this->exportDeviceCopy($id, $filename);
-
-    return $id;
+    return (int) $this->db->lastInsertId();
 }
 
 /**
- * Erzeugt die Kopie im Controller-Format (16 kHz, 16 Bit, mono) unter
- * ELA_AUDIO_DEVICE_DIR/NNNN.wav. Fehler werden protokolliert, die Ansage
- * bleibt trotzdem gespeichert (die Bridge erzeugt die Kopie dann bei Bedarf).
+ * Wandelt die WAV-Datei in das Format der Controller um (16 kHz, 16 Bit,
+ * mono) und ersetzt die Datei. Es gibt damit nur eine Datei pro Ansage.
  */
-private function exportDeviceCopy(int $id, string $filename): void
+private function convertToControllerFormat(string $path): void
 {
-    if ($id < 1 || $id > 9999) {
-        error_log("Ansage {$id}: ID außerhalb 1..9999, keine Controller-Kopie");
-        return;
-    }
-
-    $src = Config::audioDir() . '/' . basename($filename);
-    if (!is_file($src)) {
-        error_log("Ansage {$id}: Quelldatei fehlt: {$src}");
-        return;
-    }
-
-    $dir = Config::deviceAudioDir();
-    if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) {
-        error_log("Ansage {$id}: Ordner {$dir} nicht anlegbar");
-        return;
-    }
-
-    $dst = $dir . '/' . sprintf('%04d.wav', $id);
-    $tmp = $dst . '.tmp.wav';
+    $tmp = $path . '.tmp.wav';
 
     $cmd = sprintf(
         'ffmpeg -hide_banner -loglevel error -y -i %s -ac 1 -ar 16000 -c:a pcm_s16le -f wav %s 2>&1',
-        escapeshellarg($src),
+        escapeshellarg($path),
         escapeshellarg($tmp)
     );
 
@@ -208,11 +186,15 @@ private function exportDeviceCopy(int $id, string $filename): void
 
     if ($returnCode !== 0 || !is_file($tmp)) {
         @unlink($tmp);
-        error_log("Ansage {$id}: ffmpeg fehlgeschlagen: " . implode(' ', $output));
-        return;
+        throw new RuntimeException(
+            'Die Ansage konnte nicht umgewandelt werden: ' . implode("\n", $output)
+        );
     }
 
-    rename($tmp, $dst);
+    if (!rename($tmp, $path)) {
+        @unlink($tmp);
+        throw new RuntimeException('Die umgewandelte Ansage konnte nicht gespeichert werden.');
+    }
 }
 
 /**
@@ -434,6 +416,12 @@ public function delete(int $id): void
             }
 
             /*
+             * Im Format der Controller speichern (16 kHz, 16 Bit, mono).
+             * Dann gibt es nur eine Datei pro Ansage.
+             */
+            $this->convertToControllerFormat($outputFile);
+
+            /*
              * WAV-Datei auslesen.
              */
             $wav = $this->readWavInfo(
@@ -489,7 +477,7 @@ public function createFromRecording(array $upload, string $title): int
         $audioDirectory . '/' . $filename;
 
     $cmd = sprintf(
-        'ffmpeg -y -i %s -ac 1 -ar 22050 -c:a pcm_s16le %s 2>&1',
+        'ffmpeg -y -i %s -ac 1 -ar 16000 -c:a pcm_s16le %s 2>&1',
         escapeshellarg($upload['tmp_name']),
         escapeshellarg($wavFile)
     );
