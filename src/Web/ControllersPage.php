@@ -49,9 +49,15 @@ final class ControllersPage extends Page
 
         if ($action === 'test-play' || $action === 'stop') {
             $controllerId = $this->number($_POST, 'controller_id');
+            $target = $controllerId > 0 ? $controllers->find($controllerId) : null;
 
-            if ($controllerId <= 0 || !$controllers->find($controllerId)) {
+            if (!$target) {
                 throw new RuntimeException('Controller nicht gefunden.');
+            }
+
+            // Deaktivierte Controller bekommen keine Befehle
+            if ((int) $target['enabled'] !== 1) {
+                throw new RuntimeException('Der Controller ist deaktiviert. Bitte zuerst aktivieren.');
             }
 
             $commands = $this->services->deviceCommands;

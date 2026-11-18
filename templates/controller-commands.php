@@ -43,7 +43,7 @@ $statusLabels = [
                     <input type="hidden" name="action" value="test-play">
                     <input type="hidden" name="controller_id" value="<?= (int) $controller['id'] ?>">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                    <button type="submit" class="btn btn-primary">Test abspielen</button>
+                    <button type="submit" class="btn btn-primary" <?= (int) $controller['enabled'] !== 1 ? 'disabled' : '' ?>>Test abspielen</button>
                 </form>
 
                 <form method="post">
@@ -51,9 +51,15 @@ $statusLabels = [
                     <input type="hidden" name="action" value="stop">
                     <input type="hidden" name="controller_id" value="<?= (int) $controller['id'] ?>">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                    <button type="submit" class="btn btn-danger">Stopp</button>
+                    <button type="submit" class="btn btn-danger" <?= (int) $controller['enabled'] !== 1 ? 'disabled' : '' ?>>Stopp</button>
                 </form>
             </div>
+
+            <?php if ((int) $controller['enabled'] !== 1): ?>
+                <div class="alert alert-warning small mb-3">
+                    Der Controller ist deaktiviert. Befehle werden nicht gesendet, bitte zuerst aktivieren.
+                </div>
+            <?php endif; ?>
 
             <p class="text-muted small mb-3">
                 Der Test spielt die Testdurchsage ohne Ausgänge ab. Die Seite aktualisiert sich alle 5 Sekunden.
