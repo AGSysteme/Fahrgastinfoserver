@@ -273,6 +273,15 @@
                                             Befehle
                                         </a>
 
+                                        <?php if (trim((string) ($controller['ip_address'] ?? '')) !== ''): ?>
+                                        <a
+                                            class="btn btn-sm btn-outline-secondary"
+                                            href="/?page=controllers&action=logfile&id=<?= (int) $controller['id'] ?>"
+                                        >
+                                            Logfile
+                                        </a>
+                                        <?php endif; ?>
+
                                         <form
                                             method="post"
                                             onsubmit="return confirm(<?= htmlspecialchars(

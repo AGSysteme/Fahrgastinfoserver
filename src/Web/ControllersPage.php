@@ -149,6 +149,37 @@ final class ControllersPage extends Page
     {
         $controllers = $this->services->controllers;
 
+        if ($action === 'logfile') {
+            $controller = $controllers->find($this->number($_GET, 'id'));
+
+            if (!$controller) {
+                $this->abort(404, 'Controller nicht gefunden.');
+            }
+
+            $ip = trim((string) ($controller['ip_address'] ?? ''));
+            $log = null;
+            $logError = null;
+
+            if ($ip === '' || filter_var($ip, FILTER_VALIDATE_IP) === false) {
+                $logError = 'Keine gültige IP-Adresse hinterlegt.';
+            } else {
+                $context = stream_context_create(['http' => ['timeout' => 5]]);
+                $data = @file_get_contents('http://' . $ip . '/log', false, $context);
+
+                if ($data === false) {
+                    $logError = 'Controller unter ' . $ip . ' ist nicht erreichbar.';
+                } else {
+                    $log = $data;
+                }
+            }
+
+            $this->render('controller-log.php', [
+                'controller' => $controller,
+                'log' => $log,
+                'logError' => $logError,
+            ]);
+        }
+
         if ($action === 'commands') {
             $controller = $controllers->find($this->number($_GET, 'id'));
 
