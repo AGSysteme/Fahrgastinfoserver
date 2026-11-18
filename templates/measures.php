@@ -246,6 +246,41 @@
 
             <?php endif; ?>
 
+            <!-- Bridge-Protokoll -->
+            <div class="card mt-4">
+                <div class="card-body p-3 p-md-4">
+                    <h3 class="h5 mb-1">Bridge-Protokoll</h3>
+                    <p class="text-muted small mb-3">
+                        Letzte Auslösungen durch den Scheduler (neueste zuerst).
+                    </p>
+
+                    <?php if (!$runs): ?>
+                        <p class="text-muted mb-0">Noch keine Auslösungen.</p>
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Termin</th>
+                                        <th>Maßnahme</th>
+                                        <th>Ergebnis</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($runs as $run): ?>
+                                        <tr>
+                                            <td class="small text-nowrap"><?= htmlspecialchars((string) $run['slot_at']) ?></td>
+                                            <td><?= htmlspecialchars((string) $run['measure_name']) ?></td>
+                                            <td class="small"><?= htmlspecialchars((string) ($run['detail'] ?? '–')) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
             <!-- Zurück -->
             <div class="mt-4">
                 <a href="/" class="text-decoration-none">

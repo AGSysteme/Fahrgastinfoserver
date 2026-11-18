@@ -165,7 +165,54 @@ public function create(
         'file_size' => $fileSize
     ]);
 
-    return (int) $this->db->lastInsertId();
+    $id = (int) $this->db->lastInsertId();
+    $this->exportDeviceCopy($id, $filename);
+
+    return $id;
+}
+
+/**
+ * Erzeugt die Kopie im Controller-Format (16 kHz, 16 Bit, mono) unter
+ * ELA_AUDIO_DEVICE_DIR/NNNN.wav. Fehler werden protokolliert, die Ansage
+ * bleibt trotzdem gespeichert (die Bridge erzeugt die Kopie dann bei Bedarf).
+ */
+private function exportDeviceCopy(int $id, string $filename): void
+{
+    if ($id < 1 || $id > 9999) {
+        error_log("Ansage {$id}: ID außerhalb 1..9999, keine Controller-Kopie");
+        return;
+    }
+
+    $src = Config::audioDir() . '/' . basename($filename);
+    if (!is_file($src)) {
+        error_log("Ansage {$id}: Quelldatei fehlt: {$src}");
+        return;
+    }
+
+    $dir = Config::deviceAudioDir();
+    if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) {
+        error_log("Ansage {$id}: Ordner {$dir} nicht anlegbar");
+        return;
+    }
+
+    $dst = $dir . '/' . sprintf('%04d.wav', $id);
+    $tmp = $dst . '.tmp.wav';
+
+    $cmd = sprintf(
+        'ffmpeg -hide_banner -loglevel error -y -i %s -ac 1 -ar 16000 -c:a pcm_s16le -f wav %s 2>&1',
+        escapeshellarg($src),
+        escapeshellarg($tmp)
+    );
+
+    exec($cmd, $output, $returnCode);
+
+    if ($returnCode !== 0 || !is_file($tmp)) {
+        @unlink($tmp);
+        error_log("Ansage {$id}: ffmpeg fehlgeschlagen: " . implode(' ', $output));
+        return;
+    }
+
+    rename($tmp, $dst);
 }
 
 /**

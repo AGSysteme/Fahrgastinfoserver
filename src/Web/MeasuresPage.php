@@ -27,6 +27,7 @@ final class MeasuresPage extends Page
     {
         $this->render('measures.php', [
             'measures' => $this->services->measures->all(),
+            'runs' => $this->services->measures->recentRuns(50),
         ]);
     }
 }

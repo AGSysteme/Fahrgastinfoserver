@@ -41,6 +41,12 @@ final class Config
         return self::env('ELA_SYSTEM_AUDIO_DIR', '/opt/ela/audio/system');
     }
 
+    /** Kopien der Ansagen im Format der Controller (16 kHz, 16 Bit, mono) */
+    public static function deviceAudioDir(): string
+    {
+        return self::env('ELA_AUDIO_DEVICE_DIR', '/opt/ela/audio/device');
+    }
+
     public static function audioDir(): string
     {
         return self::env('ELA_AUDIO_DIR', '/opt/ela/audio/announcements');

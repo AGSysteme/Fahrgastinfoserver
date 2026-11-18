@@ -482,6 +482,25 @@ public function targets(int $measureId): array
      *
      * @return array{total: int, active: int, planned: int, expired: int}
      */
+    /**
+     * Letzte Läufe des Bridge-Schedulers (Protokoll), neueste zuerst.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function recentRuns(int $limit = 50): array
+    {
+        $stmt = $this->db->query(
+            'SELECT r.id, r.created_at, r.slot_at, r.detail, m.name AS measure_name
+             FROM measure_runs r
+             INNER JOIN measures m
+                ON m.id = r.measure_id
+             ORDER BY r.id DESC
+             LIMIT ' . max(1, min(200, $limit))
+        );
+
+        return $stmt->fetchAll();
+    }
+
     public function statusCounts(int $now): array
     {
         $measures = $this->db
